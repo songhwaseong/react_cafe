@@ -1,35 +1,31 @@
 
-import Container from 'react-bootstrap/Container';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-import NavDropdown from 'react-bootstrap/NavDropdown';
-import { useNavigate } from 'react-router-dom';
+import { NavDropdown, Navbar, Container, Nav } from "react-bootstrap";
 
-function MenuItems() {
-  const navigate = useNavigate();
+import { useNavigate } from "react-router-dom";
 
-  return (
-    <Navbar expand="lg" className="bg-body-tertiary">
-      <Container>
-        <Navbar.Brand href="#home">React-Bootstrap</Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto">
-            <Nav.Link href="#home">Home</Nav.Link>
-            <Nav.Link href="#link">Link</Nav.Link>
-            <NavDropdown title="기본연습" id="basic-nav-dropdown">
-              <NavDropdown.Item onClick={() => navigate(`/fruit`)}>과일 1개</NavDropdown.Item>
-              <NavDropdown.Item onClick={() => navigate(`/fruitList`)}>과일 목록</NavDropdown.Item>
-              <NavDropdown.Item onClick={() => navigate(`/coffee`)}>커피 한잔</NavDropdown.Item>
-              <NavDropdown.Item onClick={() => navigate(`/coffeeList`)}>커피 목록</NavDropdown.Item>
-            </NavDropdown>
-          </Nav>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
-    
-    
-  );
+type MenuItemsProps = {
+   appName: string;
+   appName2: number;
+}
+
+function MenuItems({ appName, appName2 }: MenuItemsProps) {
+   const navigate = useNavigate();
+
+   return (
+      <Navbar bg="dark" variant="dark" expand="lg">
+         <Container>
+            <Navbar.Brand href="/">{appName}{appName2}</Navbar.Brand>
+            <Nav className="me-auto">
+               <NavDropdown title={`기본 연습`}>
+                  <NavDropdown.Item onClick={() => navigate(`/fruit`, { state: { id: 1, name: "item" } })}>과일 1개</NavDropdown.Item>
+                  <NavDropdown.Item onClick={() => navigate(`/fruitList`)}>과일 목록</NavDropdown.Item>
+                  <NavDropdown.Item onClick={() => navigate(`/coffee`)}>커피 한잔</NavDropdown.Item>
+                  <NavDropdown.Item onClick={() => navigate(`/coffeeList`)}>커피 목록</NavDropdown.Item>
+               </NavDropdown>
+            </Nav>
+         </Container>
+      </Navbar >
+   );
 }
 
 export default MenuItems;

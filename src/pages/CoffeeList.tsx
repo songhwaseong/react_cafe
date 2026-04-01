@@ -11,16 +11,16 @@ function App() {
     const url = `${API_BASE_URL}/coffee/list`;
 
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchData = async (uri: string) => {
             try { // axios에 제네릭 타입 추가
-                const response = await axios.get<Coffee[]>(url);
+                const response = await axios.get<Coffee[]>(uri);
                 setCoffeeList(response.data);
             } catch (error) {
                 console.error(error);
             }
         };
 
-        fetchData();
+        fetchData(url);
     }, []);
 
     return (
@@ -35,14 +35,20 @@ function App() {
                     </tr>
                 </thead>
                 <tbody>
-                    {coffeeList.map((coffee) =>
-                        <tr key={coffee.id}>
+                    {coffeeList.map((coffee) => {
+                        return <tr key={coffee.id}>
                             <td>{coffee.id}</td>
                             <td>{coffee.name}</td>
                             <td>{coffee.type}</td>
                             <td>{coffee.price.toLocaleString()} 원</td>
                         </tr>
-                    )}
+                    })
+                    }
+                    <tr>
+                        <td colSpan={4} style={{ textAlign: 'center' }}>
+                            총 {coffeeList.length}개의 커피가 있습니다.
+                        </td>
+                    </tr>
                 </tbody>
             </Table >
         </>
