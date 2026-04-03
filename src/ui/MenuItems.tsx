@@ -15,14 +15,17 @@ function MenuItems({ appName, appName2 }: MenuItemsProps) {
       <Navbar bg="dark" variant="dark" expand="lg">
          <Container>
             <Navbar.Brand href="/">{appName}{appName2}</Navbar.Brand>
-            <Nav className="me-auto">
-               <NavDropdown title={`기본 연습`}>
-                  <NavDropdown.Item onClick={() => navigate(`/fruit`, { state: { id: 1, name: "item" } })}>과일 1개</NavDropdown.Item>
-                  <NavDropdown.Item onClick={() => navigate(`/fruitList`)}>과일 목록</NavDropdown.Item>
-                  <NavDropdown.Item onClick={() => navigate(`/coffee`)}>커피 한잔</NavDropdown.Item>
-                  <NavDropdown.Item onClick={() => navigate(`/coffeeList`)}>커피 목록</NavDropdown.Item>
-               </NavDropdown>
-            </Nav>
+            <Navbar.Toggle aria-controls="basic-navbar-nav" />
+            <Navbar.Collapse id="basic-navbar-nav">
+               <Nav className="me-auto">
+                  <NavDropdown title={`기본 연습`}>
+                     <NavDropdown.Item onClick={() => navigate(`/fruit`, { state: { id: 1, name: "item" } })}>과일 1개</NavDropdown.Item>
+                     <NavDropdown.Item onClick={() => navigate(`/fruitList`)}>과일 목록</NavDropdown.Item>
+                     <NavDropdown.Item onClick={() => navigate(`/coffee`)}>커피 한잔</NavDropdown.Item>
+                     <NavDropdown.Item onClick={() => navigate(`/coffeeList`)}>커피 목록</NavDropdown.Item>
+                  </NavDropdown>
+               </Nav>
+            </Navbar.Collapse>
          </Container>
       </Navbar >
    );

@@ -35,20 +35,31 @@ function App() {
                     </tr>
                 </thead>
                 <tbody>
-                    {coffeeList.map((coffee) => {
-                        return <tr key={coffee.id}>
-                            <td>{coffee.id}</td>
-                            <td>{coffee.name}</td>
-                            <td>{coffee.type}</td>
-                            <td>{coffee.price.toLocaleString()} 원</td>
-                        </tr>
+                    {coffeeList.map((coffee, idx, coffeeList) => {
+                        if (idx == coffeeList.length - 1) {
+                            return <>
+                                <tr key={coffee.id}>
+                                    <td>{coffee.id}</td>
+                                    <td>{coffee.name}</td>
+                                    <td>{coffee.type}</td>
+                                    <td>{coffee.price.toLocaleString()} 원</td>
+                                </tr>
+                                <tr key={coffeeList.length + 2}>
+                                    <td colSpan={4} style={{ textAlign: 'center' }}>
+                                        총 {coffeeList.length}개의 커피가 있습니다.
+                                    </td>
+                                </tr>
+                            </>
+                        } else {
+                            return <tr key={coffee.id}>
+                                <td>{coffee.id}</td>
+                                <td>{coffee.name}</td>
+                                <td>{coffee.type}</td>
+                                <td>{coffee.price.toLocaleString()} 원</td>
+                            </tr>
+                        }
                     })
                     }
-                    <tr>
-                        <td colSpan={4} style={{ textAlign: 'center' }}>
-                            총 {coffeeList.length}개의 커피가 있습니다.
-                        </td>
-                    </tr>
                 </tbody>
             </Table >
         </>
