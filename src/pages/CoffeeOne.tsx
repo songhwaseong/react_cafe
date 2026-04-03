@@ -7,7 +7,7 @@ import type { Coffee } from "../types/Coffee";
 
 function App() {
     const [coffee, setCoffee] = useState<Coffee | null>(null);
-    const url = `${API_BASE_URL}/coffee?id=`+(Math.floor(Math.random() * 4) + 1);
+    const url = `${API_BASE_URL}/api/coffee?id=` + (Math.floor(Math.random() * 4) + 1);
 
     useEffect(() => {
         const fetchData = async () => {

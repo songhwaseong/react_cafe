@@ -8,7 +8,7 @@ import type { Coffee } from "../types/Coffee";
 function App() {
     // <Coffee[]>는 Coffee 객체들의 배열, ([])는 초기값이 빈 배열이라는 뜻입니다.
     const [coffeeList, setCoffeeList] = useState<Coffee[]>([]); // 넘어온 커피 목록
-    const url = `${API_BASE_URL}/coffee/list`;
+    const url = `${API_BASE_URL}/api/coffee/list`;
 
     useEffect(() => {
         const fetchData = async (uri: string) => {

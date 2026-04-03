@@ -5,6 +5,7 @@ import FruitList from './../pages/FruitList';
 import CoffeeOne from './../pages/CoffeeOne';
 import CoffeeList from './../pages/CoffeeList';
 import HomePage from '../pages/HomePage';
+import SignUpPage from '../pages/SignUpPage';
 
 function AppRoutes() {
     return (
@@ -14,6 +15,7 @@ function AppRoutes() {
             <Route path='/fruitList' element={<FruitList />} />
             <Route path='/coffee' element={<CoffeeOne />} />
             <Route path='/coffeeList' element={<CoffeeList />} />
+            <Route path='/member/signup' element={<SignUpPage />} />
         </Routes>
     );
 }

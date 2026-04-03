@@ -18,6 +18,7 @@ function MenuItems({ appName, appName2 }: MenuItemsProps) {
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
                <Nav className="me-auto">
+                  <Nav.Link onClick={() => navigate(`/member/signup`)}>회원 가입</Nav.Link>
                   <NavDropdown title={`기본 연습`}>
                      <NavDropdown.Item onClick={() => navigate(`/fruit`, { state: { id: 1, name: "item" } })}>과일 1개</NavDropdown.Item>
                      <NavDropdown.Item onClick={() => navigate(`/fruitList`)}>과일 목록</NavDropdown.Item>
