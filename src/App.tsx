@@ -3,15 +3,43 @@ import './App.css'
 //외부 컴포넌트 import
 import MenuItems from './ui/MenuItems';
 import AppRoutes from './routes/AppRoutes';
+import { useEffect, useState } from 'react';
+import type { User } from './types/User';
+import { useNavigate } from 'react-router-dom';
 
 function App() {
   const appName = 'IT Academy Coffee Shop';
   const appName2 = 3333;
 
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const loginUser = localStorage.getItem("user");
+    if (typeof loginUser === "string") {
+      const parsed = JSON.parse(loginUser);
+      setUser(parsed);
+    }
+  }, []);
+
+  const handleLoginSuccess = (userData: User) => {
+    setUser(userData);
+    localStorage.setItem("user", JSON.stringify(userData));
+    console.log("로그인 성공:", userData);
+  }
+
+  const navigate = useNavigate();
+  const handleLogout = (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault();
+    setUser(null);
+    localStorage.removeItem("user");
+    console.log("로그아웃 성공");
+    navigate("/member/login");
+  };
+
   return (
     <>
-      <MenuItems appName={appName} appName2={appName2} />
-      <AppRoutes />
+      <MenuItems appName={appName} appName2={appName2} user={user} handleLogout={handleLogout} />
+      <AppRoutes user={user} handleLoginSuccess={handleLoginSuccess} />
       <footer className="bg-dark text-light text-center py-3 mt-5">
         <p>&copy; 2025 {appName}. All rights reserved.</p>
       </footer>

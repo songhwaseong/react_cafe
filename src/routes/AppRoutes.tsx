@@ -6,8 +6,16 @@ import CoffeeOne from './../pages/CoffeeOne';
 import CoffeeList from './../pages/CoffeeList';
 import HomePage from '../pages/HomePage';
 import SignUpPage from '../pages/SignUpPage';
+import LoginPage from '../pages/LoginPage';
+import type { User } from "../types/User";
 
-function AppRoutes() {
+
+interface AppProps {
+    user: User | null;
+    handleLoginSuccess: (userData: User) => void;
+}
+
+function AppRoutes({ user, handleLoginSuccess }: AppProps) {
     return (
         <Routes>
             <Route path='/' element={<HomePage />} />
@@ -16,6 +24,7 @@ function AppRoutes() {
             <Route path='/coffee' element={<CoffeeOne />} />
             <Route path='/coffeeList' element={<CoffeeList />} />
             <Route path='/member/signup' element={<SignUpPage />} />
+            <Route path='/member/login' element={< LoginPage onLogin={handleLoginSuccess} />} />
         </Routes>
     );
 }

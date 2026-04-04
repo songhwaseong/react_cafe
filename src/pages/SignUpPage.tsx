@@ -27,7 +27,7 @@ function App() {
         const paramters = { name, email, password, address };
         await axios.post(url, paramters, config).then((response) => {
             if (response.status === 200) {
-                alert(response.data + "님의 회원 가입 완료.");
+                alert(response.data.name + "님의 회원 가입 완료. \n " + "이메일 : " + response.data.email + "\n 주소 : " + response.data.address);
                 navigate(`/member/login`);
             }
         }).catch((error) => {
