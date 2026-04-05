@@ -8,9 +8,12 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem("accesstoken");
+        const token = localStorage.getItem("accessToken");
+        console.log("인터셉터에서 토큰:", token);
         if (token) {
             config.headers["Authorization"] = `Bearer ${token}`;
+        } else {
+            window.location.href = "/member/login";
         }
         return config;
     },
@@ -25,7 +28,9 @@ axiosInstance.interceptors.response.use(
     (error) => {
         const isLoginRequest = error.config.url?.includes("/member/login");
         if (error.response?.status === 401 && !isLoginRequest) {
-            localStorage.removeItem("accesstoken");
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("user");
+            alert("인증 실패: 토큰이 유효하지 않거나 만료되었습니다. \n로그인 페이지로 이동합니다.");
             window.location.href = "/member/login";
         }
         return Promise.reject(error);

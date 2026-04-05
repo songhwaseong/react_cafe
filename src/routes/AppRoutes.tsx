@@ -7,6 +7,7 @@ import CoffeeList from './../pages/CoffeeList';
 import HomePage from '../pages/HomePage';
 import SignUpPage from '../pages/SignUpPage';
 import LoginPage from '../pages/LoginPage';
+import UserInfo from '../pages/UserInfo';
 import type { User } from "../types/User";
 
 
@@ -23,6 +24,7 @@ function AppRoutes({ user, handleLoginSuccess }: AppProps) {
             <Route path='/fruitList' element={<FruitList />} />
             <Route path='/coffee' element={<CoffeeOne />} />
             <Route path='/coffeeList' element={<CoffeeList />} />
+            <Route path='/member/info' element={<UserInfo />} />
             <Route path='/member/signup' element={<SignUpPage />} />
             <Route path='/member/login' element={< LoginPage onLogin={handleLoginSuccess} />} />
         </Routes>

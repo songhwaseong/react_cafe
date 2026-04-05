@@ -1,9 +1,9 @@
-import axios from "axios";
 
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
-import { API_BASE_URL } from "../config/config";
 import type { Coffee } from "../types/Coffee";
+import { API_BASE_URL } from "../config/config";
 
 function App() {
     const [coffee, setCoffee] = useState<Coffee | null>(null);

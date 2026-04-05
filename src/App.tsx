@@ -32,13 +32,14 @@ function App() {
     e.preventDefault();
     setUser(null);
     localStorage.removeItem("user");
+    localStorage.removeItem("accessToken");
     console.log("로그아웃 성공");
     navigate("/member/login");
   };
 
   return (
     <>
-      <MenuItems appName={appName} appName2={appName2} user={user} handleLogout={handleLogout} />
+      <MenuItems appName={appName} user={user} handleLogout={handleLogout} />
       <AppRoutes user={user} handleLoginSuccess={handleLoginSuccess} />
       <footer className="bg-dark text-light text-center py-3 mt-5">
         <p>&copy; 2025 {appName}. All rights reserved.</p>

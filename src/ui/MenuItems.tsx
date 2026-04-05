@@ -6,12 +6,11 @@ import type { User } from "../types/User";
 
 type MenuItemsProps = {
    appName: string;
-   appName2: number;
    user: User | null;
    handleLogout: (e: React.MouseEvent<HTMLElement>) => void;
 }
 
-function MenuItems({ appName, appName2, user, handleLogout }: MenuItemsProps) {
+function MenuItems({ appName, user, handleLogout }: MenuItemsProps) {
    const navigate = useNavigate();
 
    const renderMenu = () => {
@@ -19,6 +18,7 @@ function MenuItems({ appName, appName2, user, handleLogout }: MenuItemsProps) {
          case 'ADMIN':
             return (
                <>
+                  <Nav.Link onClick={() => navigate(`/member/info`, { state: { email: user?.email } })}>회원 정보</Nav.Link>
                   <Nav.Link onClick={() => navigate(`/product/insert`)}>상품 등록</Nav.Link>
                   {/* 관리자는 모든 사람의 주문 내역 확인 */}
                   <Nav.Link onClick={() => navigate(`/order/list`)}>주문 내역</Nav.Link>
@@ -28,6 +28,7 @@ function MenuItems({ appName, appName2, user, handleLogout }: MenuItemsProps) {
          case 'USER':
             return (
                <>
+                  <Nav.Link onClick={() => navigate(`/member/info`, { state: { email: user?.email } })}>회원 정보</Nav.Link>
                   <Nav.Link onClick={() => navigate(`/cart/list`)}>장바구니</Nav.Link>
                   <Nav.Link onClick={() => navigate(`/order/list`)}>주문 내역</Nav.Link>
                   <Nav.Link onClick={handleLogout}>로그 아웃</Nav.Link>
@@ -46,11 +47,10 @@ function MenuItems({ appName, appName2, user, handleLogout }: MenuItemsProps) {
    return (
       <Navbar bg="dark" variant="dark" expand="lg">
          <Container>
-            <Navbar.Brand href="/">{appName}{appName2}</Navbar.Brand>
+            <Navbar.Brand href="/">{appName}</Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
                <Nav className="me-auto">
-                  <Nav.Link onClick={() => navigate(`/member/signup`)}>회원 가입</Nav.Link>
                   {renderMenu()}
                   <NavDropdown title={`기본 연습`}>
                      <NavDropdown.Item onClick={() => navigate(`/fruit`, { state: { id: 1, name: "item" } })}>과일 1개</NavDropdown.Item>

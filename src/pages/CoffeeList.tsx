@@ -1,9 +1,8 @@
 import axios from "axios";
-
 import { useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
-import { API_BASE_URL } from "../config/config";
 import type { Coffee } from "../types/Coffee";
+import { API_BASE_URL } from "../config/config";
 
 function App() {
     // <Coffee[]>는 Coffee 객체들의 배열, ([])는 초기값이 빈 배열이라는 뜻입니다.
