@@ -8,6 +8,8 @@ import { API_IMAGE_URL, API_PRODUCT_URL } from "../config/config";
 import type { Product } from "../types/Product";
 import type { User } from "../types/User";
 
+import customAxios from "../api/axiosInstance";
+
 
 /*
 step 01
@@ -78,27 +80,32 @@ function App({ user }: ProductProps) {
                             return;
                         }
 
-                        try { // 상품을 삭제 후 다시 상품 목록 페이지를 보여 줍니다. 
-                            // 주의) 상품을 삭제하려면 반드시 primary key인 상품의 아이디를 넘겨 주어야 합니다.
-                            await axios.delete(`${API_PRODUCT_URL}/delete/${item.id}`, {
-                                withCredentials: true, // 세션 정보 포함
-                            });
-                            // alert 함수(modal 통신)와 비동기 통신 사용시, 화면 갱신에 유의하도록 합니다.
+                        // try { // 상품을 삭제 후 다시 상품 목록 페이지를 보여 줍니다. 
+                        // 주의) 상품을 삭제하려면 반드시 primary key인 상품의 아이디를 넘겨 주어야 합니다.
+                        await customAxios.delete(`${API_PRODUCT_URL}/delete/${item.id}`, {
+                            withCredentials: true, // 세션 정보 포함
+                        }).then(() => {
                             alert(`'${item.name}' 상품이 삭제 되었습니다.`);
-
                             // 삭제된 id를 배제하고, 상품 목록 state를 다시 갱신합니다.
                             setProducts(prev => prev.filter(p => p.id !== item.id));
-
                             navigate('/product/list');
+                        }).catch((error) => {
+                            //alert(`상품 삭제 실패 : ${error.response?.data || error.message}`);
+                            console.log(error.response?.data || error.message);
+                        });
+                        // alert 함수(modal 통신)와 비동기 통신 사용시, 화면 갱신에 유의하도록 합니다.
 
-                        } catch (error) {
-                            console.log(error);
-                            if (axios.isAxiosError(error)) {
-                                alert(`상품 삭제 실패 : ${error.response?.data || error.message}`);
-                            } else {
-                                console.error("알 수 없는 에러", error);
-                            }
-                        }
+
+
+                        // } catch (error) {
+                        //     console.log(error);
+                        //     alert(`상품 삭제 실패 : error`);
+                        //     // if (axios.isAxiosError(error)) {
+                        //     //     alert(`상품 삭제 실패 : ${error.response?.data || error.message}`);
+                        //     // } else {
+                        //     //     console.error("알 수 없는 에러", error);
+                        //     // }
+                        // }
                     }}
                 >
                     삭제

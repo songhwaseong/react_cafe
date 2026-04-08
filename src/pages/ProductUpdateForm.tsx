@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Alert, Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
@@ -6,6 +5,7 @@ import { API_PRODUCT_URL } from "../config/config";
 // useParams 훅은 url에 들어 있는 동적 파라미터의 값을 챙길때 사용합니다.
 import { useParams } from "react-router-dom";
 import type { User } from '../types/User';
+import customAxios from '../api/axiosInstance';
 /*
 상품 수정 페이지입니다.
 
@@ -94,7 +94,7 @@ function App({ user }: AppProps) {
 
         const url = `${API_PRODUCT_URL}/update/${id}`;
 
-        axios
+        customAxios
             .get(url, { withCredentials: true })
             .then((response) => {
                 setProduct(response.data);
@@ -159,29 +159,27 @@ function App({ user }: AppProps) {
             return; // 수정 중단
         }
 
-        try {
-            // 주의) 라우팅 규칙 때문에 ${id}를 제거하면 안됩니다.
-            const url = `${API_PRODUCT_URL}/update/${id}`;
+        // 주의) 라우팅 규칙 때문에 ${id}를 제거하면 안됩니다.
+        const url = `${API_PRODUCT_URL}/update/${id}`;
 
-            // 참조 공유 : 2변수가 동일한 곳을 참조합니다.
-            const parameters = product;
-            console.log('param : ' + parameters);
+        // 참조 공유 : 2변수가 동일한 곳을 참조합니다.
+        const parameters = product;
+        console.log('param : ' + parameters);
 
-            // 얕은 복사 : 왼쪽이 오른쪽의 복사본을 가집니다.
-            // const parameters = {...product};
+        // 얕은 복사 : 왼쪽이 오른쪽의 복사본을 가집니다.
+        // const parameters = {...product};
 
-            // 깊은 복사 : JSON.parse()와 JSON.stringify()을 같이 사용하는 방식
+        // 깊은 복사 : JSON.parse()와 JSON.stringify()을 같이 사용하는 방식
 
-            // Content-Type(Mime Type) : 문서의 종류가 어떠한 종류인지를 알려 주는 항목
-            // 예시 : 'text/html', 'image/jpeg', 'application/json' 등등
-            // 이 문서는 json 형식의 파일입니다.            
-            const config = {
-                headers: { 'Content-Type': 'application/json' },
-                withCredentials: true
-            };
-            // put() 메소드는 리소스를 "수정"하고자 할 때 사용하는 메소드입니다.
-            const response = await axios.put(url, parameters, config);
-
+        // Content-Type(Mime Type) : 문서의 종류가 어떠한 종류인지를 알려 주는 항목
+        // 예시 : 'text/html', 'image/jpeg', 'application/json' 등등
+        // 이 문서는 json 형식의 파일입니다.            
+        const config = {
+            headers: { 'Content-Type': 'application/json' },
+            withCredentials: true
+        };
+        // put() 메소드는 리소스를 "수정"하고자 할 때 사용하는 메소드입니다.
+        await customAxios.put(url, parameters, config).then((response) => {
             console.log(`상품 수정 : [${response.data}]`);
             alert('상품이 성공적으로 수정 되었습니다.');
 
@@ -192,9 +190,8 @@ function App({ user }: AppProps) {
 
             // 등록이 이루어 지고 난 후 상품 목록 페이지로 이동합니다.
             navigate('/product/list');
-
-        } catch (error: unknown) {
-            if (axios.isAxiosError(error) && error.response) {
+        }).catch((error) => {
+            if (error && error.response) {
                 // 백엔드에서 전달받은 오류 메시지를 저장
                 setErrors((prev) => ({
                     ...prev,
@@ -207,7 +204,8 @@ function App({ user }: AppProps) {
                     general: '서버와의 통신 중 오류가 발생했습니다.'
                 }));
             }
-        };
+        });
+
     };
 
     return (
