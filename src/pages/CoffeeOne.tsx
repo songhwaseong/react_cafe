@@ -1,13 +1,12 @@
 
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
 import type { Coffee } from "../types/Coffee";
-import { API_BASE_URL } from "../config/config";
+import axios from "../api/axiosInstance";
 
 function App() {
     const [coffee, setCoffee] = useState<Coffee | null>(null);
-    const url = `${API_BASE_URL}/api/coffee?id=` + (Math.floor(Math.random() * 4) + 1);
+    const url = `/product/coffee?id=` + (Math.floor(Math.random() * 4) + 1);
 
     useEffect(() => {
         const fetchData = async () => {

@@ -7,7 +7,7 @@ import axios from "../api/axiosInstance";
 function App() {
 
     const [User, setUser] = useState<User | null>(null);
-    const location = useLocation();
+    const location = useLocation(); // 라우터 통해서 전달된 데이터 받는 훅
     let email = location.state.email;
     let url = `/api/memberInfo?email=${email}`;
 
@@ -47,6 +47,10 @@ function App() {
                     <tr>
                         <td>가입일</td>
                         <td>{User?.regdate}</td>
+                    </tr>
+                    <tr>
+                        <td>직원여부</td>
+                        <td>{User?.role === 'ADMIN' ? '예' : '아니오'}</td>
                     </tr>
                 </tbody>
             </Table >

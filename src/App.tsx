@@ -9,21 +9,20 @@ import { useNavigate } from 'react-router-dom';
 
 function App() {
   const appName = 'IT Academy Coffee Shop';
-  const appName2 = 3333;
 
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const loginUser = localStorage.getItem("user");
     if (typeof loginUser === "string") {
-      const parsed = JSON.parse(loginUser);
+      const parsed = JSON.parse(loginUser);   //json 문자열을 객체로 변환하여 상태에 저장
       setUser(parsed);
     }
   }, []);
 
   const handleLoginSuccess = (userData: User) => {
     setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("user", JSON.stringify(userData)); //json 객체를 문자열로 변환하여 저장
     console.log("로그인 성공:", userData);
   }
 

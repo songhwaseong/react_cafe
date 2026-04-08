@@ -2,7 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { Alert, Card, Col, Container, Form, Row } from "react-bootstrap";
 import { useNavigate } from "react-router";
-import { API_BASE_URL } from "../config/config";
+import { API_MEMBER_URL } from "../config/config";
 
 function App() {
     const [name, setName] = useState("");
@@ -22,7 +22,7 @@ function App() {
 
     const SingUpAction = async (event: React.SubmitEvent) => {
         event.preventDefault();
-        const url = `${API_BASE_URL}/member/signup`;
+        const url = `${API_MEMBER_URL}/signup`;
         const config = { withCredentials: true };
         const paramters = { name, email, password, address };
         await axios.post(url, paramters, config).then((response) => {

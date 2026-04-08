@@ -1,13 +1,12 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
 import type { Coffee } from "../types/Coffee";
-import { API_BASE_URL } from "../config/config";
+import axios from "../api/axiosInstance";
 
 function App() {
     // <Coffee[]>는 Coffee 객체들의 배열, ([])는 초기값이 빈 배열이라는 뜻입니다.
     const [coffeeList, setCoffeeList] = useState<Coffee[]>([]); // 넘어온 커피 목록
-    const url = `${API_BASE_URL}/api/coffee/list`;
+    const url = `/product/coffee/list`;
 
     useEffect(() => {
         const fetchData = async (uri: string) => {

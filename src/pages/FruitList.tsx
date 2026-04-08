@@ -1,19 +1,17 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import type { Fruit } from "../types/Fruit";
 import { Table } from "react-bootstrap";
-import { API_BASE_URL } from "../config/config";
+import axios from "../api/axiosInstance";
 
 function App() {
 
     const [fruitList, setFruitList] = useState<Fruit[]>([]);
-    const url = `${API_BASE_URL}/api/fruitList`;
-    const config = { withCredentials: true };
+    const url = `/product/fruitList`;
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                await axios.get<Fruit[]>(url, config).then((response) => {
+                await axios.get<Fruit[]>(url).then((response) => {
                     console.log(response.data);
                     setFruitList(response.data);
                 });

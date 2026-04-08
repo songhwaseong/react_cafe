@@ -1,11 +1,9 @@
-import axios from "axios";
 import { useState } from "react";
 import { Alert, Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
-
-
 import type { LoginResponse, User } from "../types/User.ts";
-import { API_BASE_URL } from "../config/config.tsx";
+import axios from "axios";
+import { API_MEMBER_URL } from "../config/config.tsx";
 
 interface Props {
     onLogin: (user: User) => void;
@@ -14,22 +12,25 @@ interface Props {
 function Login({ onLogin }: Props) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-
     const [errors, setErrors] = useState("");
-
     const navigate = useNavigate();
 
     const handleLogin = async (e: React.SubmitEvent) => {
         e.preventDefault();
         console.log('로그인 시도 중...');
-        const params = new URLSearchParams();
-        params.append("email", email);
-        params.append("password", password);
+        const params = {
+            email,
+            password
+        };
+        const config = {
+            headers: {
+                "Content-Type": "application/json"
+            }
+        };
 
         await axios.post<LoginResponse>(
-            `${API_BASE_URL}/member/login`,
-            params).then((response) => {
-                console.log("로그인 성공:", response.data);
+            `${API_MEMBER_URL}/login`,
+            params, config).then((response) => {
                 const { accessToken, ...userData } = response.data;
                 localStorage.setItem("accessToken", accessToken);
                 if (onLogin) {      //로그인 처리(함수 또는 상태)가 정의되어 있다면 ~을 해라

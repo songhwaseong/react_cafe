@@ -18,6 +18,7 @@ function MenuItems({ appName, user, handleLogout }: MenuItemsProps) {
          case 'ADMIN':
             return (
                <>
+                  <Nav.Link onClick={() => navigate(`/product/list`)}>상품보기</Nav.Link>
                   <Nav.Link onClick={() => navigate(`/member/info`, { state: { email: user?.email } })}>회원 정보</Nav.Link>
                   <Nav.Link onClick={() => navigate(`/product/insert`)}>상품 등록</Nav.Link>
                   {/* 관리자는 모든 사람의 주문 내역 확인 */}
@@ -28,6 +29,7 @@ function MenuItems({ appName, user, handleLogout }: MenuItemsProps) {
          case 'USER':
             return (
                <>
+                  <Nav.Link onClick={() => navigate(`/product/list`)}>상품보기</Nav.Link>
                   <Nav.Link onClick={() => navigate(`/member/info`, { state: { email: user?.email } })}>회원 정보</Nav.Link>
                   <Nav.Link onClick={() => navigate(`/cart/list`)}>장바구니</Nav.Link>
                   <Nav.Link onClick={() => navigate(`/order/list`)}>주문 내역</Nav.Link>
@@ -37,6 +39,7 @@ function MenuItems({ appName, user, handleLogout }: MenuItemsProps) {
          default:
             return (
                <>
+                  <Nav.Link onClick={() => navigate(`/product/list`)}>상품보기</Nav.Link>
                   <Nav.Link onClick={() => navigate(`/member/login`)}>로그인</Nav.Link>
                   <Nav.Link onClick={() => navigate(`/member/signup`)}>회원 가입</Nav.Link>
                </>

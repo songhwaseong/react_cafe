@@ -1,13 +1,12 @@
-import axios from "axios";
 import { useState, useEffect } from "react";
 import type { Fruit } from "../types/Fruit";
 import { Table } from "react-bootstrap";
-import { API_BASE_URL } from "../config/config";
+import axios from "../api/axiosInstance";
 
 function App() {
 
     const [fruit, setFruit] = useState<Fruit | null>(null);
-    let url = `${API_BASE_URL}/api/fruit`;
+    let url = `/product/fruit`;
 
     useEffect(() => {
         const fetchData = async () => {
