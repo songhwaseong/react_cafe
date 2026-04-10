@@ -13,6 +13,7 @@ interface Props {
 function Login({ onLogin }: Props) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [autoLogin, setAutoLogin] = useState(false);
     const [errors, setErrors] = useState("");
     const navigate = useNavigate();
 
@@ -21,7 +22,8 @@ function Login({ onLogin }: Props) {
         console.log('로그인 시도 중...');
         const params = {
             email,
-            password
+            password,
+            autoLogin
         };
         const config = {
             headers: {
@@ -45,12 +47,21 @@ function Login({ onLogin }: Props) {
             })
     };
 
-    const setLoginInfo = (e: React.MouseEvent<HTMLInputElement>) => {
-        e.preventDefault();
-        console.log('자동 로그인 체크됨');
-        setEmail("supyoungsun@gmail.com");
-        setPassword("Songhwasung!1");
-    }
+    const autoLoginHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value, type, checked } = e.target;
+        console.log(value);
+        console.log(type === "checkbox" ? checked : value);
+        setAutoLogin(type === "checkbox" ? checked : false);
+        console.log(autoLogin);
+    };
+
+    // const setLoginInfo = (e: React.MouseEvent<HTMLInputElement>) => {
+    //     e.preventDefault();
+
+    //     console.log('자동 로그인 체크됨');
+    //     setEmail("supyoungsun@gmail.com");
+    //     setPassword("Songhwasung!1");
+    // }
     return (
         <Container fluid className="d-flex justify-content-center align-items-center" style={{ height: "70vh" }}>
             <Row className="w-100 justify-content-center">
@@ -95,7 +106,7 @@ function Login({ onLogin }: Props) {
                                             type="checkbox"
                                             id="autoLogin"
                                             label="자동로그인"
-                                            onClick={(e) => setLoginInfo(e)}
+                                            onClick={autoLoginHandler}
                                         />
                                     </Col>
                                 </Form.Group>
