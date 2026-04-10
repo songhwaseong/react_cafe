@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Alert, Button, Card, Col, Container, Form, Row } from "react-bootstrap";
+import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import type { LoginResponse, User } from "../types/User.ts";
 import axios from "axios";
 import { API_MEMBER_URL } from "../config/config.tsx";
+import { alertEx } from "../alert/Sweetalert2Confirm";
 
 interface Props {
     onLogin: (user: User) => void;
@@ -40,9 +41,16 @@ function Login({ onLogin }: Props) {
                 navigate("/");
             }).catch((error) => {
                 console.error("로그인 실패:", error);
-                setErrors("로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.");
+                setErrors("로그인에 실패했습니다. \n 이메일과 비밀번호를 확인해주세요.");
             })
     };
+
+    const setLoginInfo = (e: React.MouseEvent<HTMLInputElement>) => {
+        e.preventDefault();
+        console.log('자동 로그인 체크됨');
+        setEmail("supyoungsun@gmail.com");
+        setPassword("Songhwasung!1");
+    }
     return (
         <Container fluid className="d-flex justify-content-center align-items-center" style={{ height: "70vh" }}>
             <Row className="w-100 justify-content-center">
@@ -51,8 +59,8 @@ function Login({ onLogin }: Props) {
                         <Card.Body>
                             <h2 className="text-center mb-4">로그인</h2>
 
-                            {errors && <Alert variant="danger">{errors}</Alert>}
-
+                            {/* {errors && <Alert variant="danger">{errors}</Alert>} */}
+                            <>{errors && alertEx(errors, function () { })}</>
                             <Form onSubmit={handleLogin}>
                                 <Form.Group as={Row} className="mb-3 align-items-center">
                                     <Form.Label column sm={3} className="text-end fw-bold text-primary">
@@ -82,7 +90,16 @@ function Login({ onLogin }: Props) {
                                             required
                                         />
                                     </Col>
+                                    <Col xs="auto" className="my-1">
+                                        <Form.Check
+                                            type="checkbox"
+                                            id="autoLogin"
+                                            label="자동로그인"
+                                            onClick={(e) => setLoginInfo(e)}
+                                        />
+                                    </Col>
                                 </Form.Group>
+
 
                                 <Row className="g-2">
                                     <Col xs={8}>

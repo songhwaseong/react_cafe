@@ -1,14 +1,14 @@
-import axios from "axios";
 
 import { useEffect, useState } from "react";
 import { Button, Card, Col, Container, Row } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 
-import { API_IMAGE_URL, API_PRODUCT_URL } from "../config/config";
 import type { Product } from "../types/Product";
 import type { User } from "../types/User";
 
 import customAxios from "../api/axiosInstance";
+import { alertEx, confirmEx } from "../alert/Sweetalert2Confirm";
+import { API_IMAGE_URL } from "../config/config";
 
 
 /*
@@ -32,9 +32,9 @@ function App({ user }: ProductProps) {
 
     // 스프링 부트에 "상품 목록"을 요청하기
     useEffect(() => {
-        const url = `${API_PRODUCT_URL}/list`;
+        const url = `/product/list`;
 
-        axios
+        customAxios
             .get(url, {})
             .then((response) => {
                 console.log('응답 받은 데이터');
@@ -46,6 +46,7 @@ function App({ user }: ProductProps) {
 
     }, []);
 
+
     const navigate = useNavigate();
 
     // 이 함수는 관리자 모드일때 보여 주는 `수정`과 `삭제`를 위한 버튼을 생성해주는 함수입니다.
@@ -54,59 +55,41 @@ function App({ user }: ProductProps) {
 
         return (
             <div className="d-flex justify-content-center">
-                <Button
-                    variant="warning"
-                    className="mb-2"
-                    size="sm"
-                    onClick={(event) => {
-                        event.stopPropagation();
-                        navigate(`/product/update/${item.id}`);
-                    }}
-                >
+                <Button variant="dark" className="mb-2" size="sm" onClick={(e) => { e.stopPropagation(); navigate(`/product/update/${item.id}`); }}                >
                     수정
                 </Button>
                 &nbsp;
-                <Button
-                    variant="danger"
-                    className="mb-2"
-                    size="sm"
-                    onClick={async (event) => {
-                        event.stopPropagation();
+                <Button variant="info" className="mb-2" size="sm" onClick={async (e) => {
+                    e.stopPropagation();
 
-                        const isDelete = window.confirm(`'${item.name}' 상품을 삭제하시겠습니까?`);
+                    // const isDelete = window.confirm(`'${item.name}' 상품을 삭제하시겠습니까?`);
 
-                        if (isDelete === false) {
-                            alert(`'${item.name}' 상품 삭제를 취소하셨습니다.`);
-                            return;
-                        }
-
-                        // try { // 상품을 삭제 후 다시 상품 목록 페이지를 보여 줍니다. 
-                        // 주의) 상품을 삭제하려면 반드시 primary key인 상품의 아이디를 넘겨 주어야 합니다.
-                        await customAxios.delete(`${API_PRODUCT_URL}/delete/${item.id}`, {
+                    confirmEx(`'${item.name}' 상품을 삭제하시겠습니까?`, async function () {
+                        await customAxios.delete(`/product/delete/${item.id}`, {
                             withCredentials: true, // 세션 정보 포함
                         }).then(() => {
-                            alert(`'${item.name}' 상품이 삭제 되었습니다.`);
+                            alertEx(`'${item.name}' 상품이 삭제 되었습니다.`, function () { });
                             // 삭제된 id를 배제하고, 상품 목록 state를 다시 갱신합니다.
-                            setProducts(prev => prev.filter(p => p.id !== item.id));
+                            setProducts(prev => prev.filter(p => p.id !== item.id));    //졸라 멋있는 식
                             navigate('/product/list');
                         }).catch((error) => {
                             //alert(`상품 삭제 실패 : ${error.response?.data || error.message}`);
                             console.log(error.response?.data || error.message);
                         });
-                        // alert 함수(modal 통신)와 비동기 통신 사용시, 화면 갱신에 유의하도록 합니다.
+                    }, function () {
+                        alertEx(`'${item.name}' 상품 삭제를 취소하셨습니다.`, function () { });
+                        return;
+                    });
 
+                    // if (isDelete === false) {
+                    //     //alert(`'${item.name}' 상품 삭제를 취소하셨습니다.`);
+                    //     alertEx(`'${item.name}' 상품 삭제를 취소하셨습니다.`, function () {
+                    //         console.log('Alert dismissed');
+                    //     });
+                    //     return;
+                    // }
 
-
-                        // } catch (error) {
-                        //     console.log(error);
-                        //     alert(`상품 삭제 실패 : error`);
-                        //     // if (axios.isAxiosError(error)) {
-                        //     //     alert(`상품 삭제 실패 : ${error.response?.data || error.message}`);
-                        //     // } else {
-                        //     //     console.error("알 수 없는 에러", error);
-                        //     // }
-                        // }
-                    }}
+                }}
                 >
                     삭제
                 </Button>
@@ -120,7 +103,7 @@ function App({ user }: ProductProps) {
             <div className="d-flex justify-content-start">
                 <Link to={`/product/insert`}>
                     {user?.role === 'ADMIN' && (
-                        <Button variant="primary" className="mb-3">
+                        <Button variant="success" className="mb-3">
                             상품 등록
                         </Button>
                     )}

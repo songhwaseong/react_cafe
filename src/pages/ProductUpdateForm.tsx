@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Alert, Button, Col, Container, Form, Row } from 'react-bootstrap';
+import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { API_PRODUCT_URL } from "../config/config";
 // useParams 훅은 url에 들어 있는 동적 파라미터의 값을 챙길때 사용합니다.
 import { useParams } from "react-router-dom";
 import type { User } from '../types/User';
 import customAxios from '../api/axiosInstance';
+import { alertEx } from '../alert/Sweetalert2Confirm';
 /*
 상품 수정 페이지입니다.
 
@@ -63,7 +64,7 @@ function App({ user }: AppProps) {
     const comment = '상품 수정';
 
     const initial_value = {
-        name: '', price: '', category: '', stock: '', image: '', description: ''
+        name: '', price: '', category: '-', stock: '', image: '', description: ''
     }; // 상품 객체 정보
 
     // product는 백엔드에게 넘겨줄 상품 등록 정보를 담고 있는 객체
@@ -88,20 +89,20 @@ function App({ user }: AppProps) {
     // id를 이용하여 기존에 입력한 상품 정보 가져오기
     useEffect(() => {
         if (user && user.role !== 'ADMIN') {
-            alert(`${comment} 기능은(는) 관리자만 접근이 가능합니다.`);
+            alertEx(`${comment} 기능은(는) 관리자만 접근이 가능합니다.`, function () { });
             navigate('/');
         }
 
         const url = `${API_PRODUCT_URL}/update/${id}`;
 
         customAxios
-            .get(url, { withCredentials: true })
+            .get(url)
             .then((response) => {
                 setProduct(response.data);
             })
             .catch((error) => {
                 console.log(`상품 ${id}번 오류 발생 : ${error}`);
-                alert('해당 상품 정보를 읽어 오지 못했습니다.');
+                alertEx(`해당 상품 정보를 읽어 오지 못했습니다.`, function () { });
             });
 
     }, [id, user, navigate]); // id 값이 변경될 때 마다 화면을 re-rendering 시켜야 합니다.
@@ -157,39 +158,33 @@ function App({ user }: AppProps) {
         if (product.category === "-") {
             alert('카테고리를 반드시 선택해 주셔야 합니다.');
             return; // 수정 중단
+        } else if (product.image.indexOf('data:image') === -1) {
+            alertEx('이미지 파일을 업로드 해 주셔야 합니다.', function () { });
+            return;
         }
 
         // 주의) 라우팅 규칙 때문에 ${id}를 제거하면 안됩니다.
         const url = `${API_PRODUCT_URL}/update/${id}`;
 
-        // 참조 공유 : 2변수가 동일한 곳을 참조합니다.
-        const parameters = product;
-        console.log('param : ' + parameters);
-
-        // 얕은 복사 : 왼쪽이 오른쪽의 복사본을 가집니다.
-        // const parameters = {...product};
-
-        // 깊은 복사 : JSON.parse()와 JSON.stringify()을 같이 사용하는 방식
-
         // Content-Type(Mime Type) : 문서의 종류가 어떠한 종류인지를 알려 주는 항목
         // 예시 : 'text/html', 'image/jpeg', 'application/json' 등등
         // 이 문서는 json 형식의 파일입니다.            
         const config = {
-            headers: { 'Content-Type': 'application/json' },
-            withCredentials: true
+            headers: { 'Content-Type': 'application/json' }
         };
         // put() 메소드는 리소스를 "수정"하고자 할 때 사용하는 메소드입니다.
-        await customAxios.put(url, parameters, config).then((response) => {
+        await customAxios.put(url, product, config).then((response) => {
             console.log(`상품 수정 : [${response.data}]`);
-            alert('상품이 성공적으로 수정 되었습니다.');
+            alertEx('상품이 성공적으로 수정 되었습니다.', function () {
+                // 상품 등록후 입력 컨트롤은 모두 초기화 되어야 합니다.
+                setProduct(initial_value);
 
-            // 상품 등록후 입력 컨트롤은 모두 초기화 되어야 합니다.
-            setProduct(initial_value);
+                setErrors(initialErrors); // 오류 초기화 
 
-            setErrors(initialErrors); // 오류 초기화 
+                // 등록이 이루어 지고 난 후 상품 목록 페이지로 이동합니다.
+                navigate('/product/list');
+            });
 
-            // 등록이 이루어 지고 난 후 상품 목록 페이지로 이동합니다.
-            navigate('/product/list');
         }).catch((error) => {
             if (error && error.response) {
                 // 백엔드에서 전달받은 오류 메시지를 저장
@@ -214,7 +209,8 @@ function App({ user }: AppProps) {
             <h1>{comment} </h1>
 
             {/* 일반 오류 메시지 */}
-            {errors.general && <Alert variant="danger" > {errors.general} </Alert>}
+            {/* {errors.general && <Alert variant="danger" > {errors.general} </Alert>} */}
+            <>{errors.general && alertEx(errors.general, function () { })}</>
             <Form onSubmit={SubmitAction}>
 
                 {/* 이름 */}
@@ -317,6 +313,7 @@ function App({ user }: AppProps) {
                 </Form.Group>
 
                 < Button variant='primary' type='submit' size='lg' > {comment} </Button>
+                <Button variant="danger" type='submit' size='lg' href="/product/list">이전 목록</Button>
             </Form>
         </Container >
     );

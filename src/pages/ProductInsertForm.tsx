@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Alert, Button, Col, Container, Form, Row } from 'react-bootstrap';
+import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { API_PRODUCT_URL } from "../config/config";
 import type { User } from '../types/User';
 // import type { FormEvent } from "react";
 import customAxios from '../api/axiosInstance';
+import { alertEx } from '../alert/Sweetalert2Confirm';
 
 
 /*
@@ -47,7 +48,7 @@ function App({ user }: ProductInsertFormProps) {
     console.log(user)
     useEffect(() => {
         if (user && user.role !== 'ADMIN') {
-            alert(`${comment} 기능은(는) 관리자만 접근이 가능합니다.`);
+            alertEx(`${comment} 기능은(는) 관리자만 접근이 가능합니다.`, function () { });
             navigate('/');
         }
     }, [user, navigate]);
@@ -77,10 +78,19 @@ function App({ user }: ProductInsertFormProps) {
     const ControlChange = (
         event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     ) => {
+        console.log(event);
         // event 객체는 change 이벤트를 발생시킨 폼 컨트롤입니다.
         const { name, value } = event.target;
         //console.log(`값이 바뀐 컨트롤 : ${name}, 값 : ${value}`);
 
+        // console.log(typeof name); // string
+        // console.log(typeof [name]); // string
+        // console.log(name); // string
+        // console.log([name]); // string
+        console.log(typeof product.name);
+        console.log(typeof product.price);
+        console.log(typeof product.category);
+        console.log(typeof product.image);
         // 전개 연산자를 사용하여 이전 컨트롤의 값들도 보존하도록 합니다.
         setProduct({ ...product, [name]: value });
     }
@@ -108,7 +118,6 @@ function App({ user }: ProductInsertFormProps) {
         reader.onloadend = () => {
             const result = reader.result;
             //console.log(result);
-
             // 해당 이미지는 Base64 인코딩 문자열 형식으로 state에 저장합니다.
             // 사용 예시 : data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA...
             setProduct({ ...product, [name]: result });
@@ -122,9 +131,12 @@ function App({ user }: ProductInsertFormProps) {
     const SubmitAction = async (event: React.SyntheticEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        if (product.category === "-") {
-            alert('카테고리를 반드시 선택해 주셔야 합니다.');
+        if (product.category === "" || product.category === "-") {
+            alertEx('카테고리를 반드시 선택해 주셔야 합니다.', function () { });
             return; // 등록 중단
+        } else if (product.image.indexOf('data:image') === -1) {
+            alertEx('이미지 파일을 업로드 해 주셔야 합니다.', function () { });
+            return;
         }
 
         const url = `${API_PRODUCT_URL}/insert`;
@@ -147,15 +159,17 @@ function App({ user }: ProductInsertFormProps) {
         await customAxios.post(url, parameters, config)
             .then((response) => {
                 console.log(`상품 등록 : [${response.data}]`);
-                alert('상품이 성공적으로 등록 되었습니다.');
+                alertEx('상품이 성공적으로 등록 되었습니다.', function () {
+                    // 상품 등록후 입력 컨트롤은 모두 초기화 되어야 합니다.
+                    setProduct(initial_value);
 
-                // 상품 등록후 입력 컨트롤은 모두 초기화 되어야 합니다.
-                setProduct(initial_value);
+                    setErrors(initialErrors); // 오류 초기화
 
-                setErrors(initialErrors); // 오류 초기화
+                    // 등록이 이루어 지고 난 후 상품 목록 페이지로 이동합니다.
+                    navigate('/product/list');
+                });
 
-                // 등록이 이루어 지고 난 후 상품 목록 페이지로 이동합니다.
-                navigate('/product/list');
+
             }).catch((error) => {
                 console.log(error);
                 if (error && error.response) {
@@ -180,7 +194,9 @@ function App({ user }: ProductInsertFormProps) {
             <h1>{comment}</h1>
 
             {/* 일반 오류 메시지 */}
-            {errors.general && <Alert variant="danger">{errors.general}</Alert>}
+            {/* {errors.general && <Alert variant="danger">{errors.general}</Alert>} */}
+
+            <>{errors.general && alertEx(errors.general, function () { })}</>
 
             <Form onSubmit={SubmitAction}>
                 {/* 이름 */}
@@ -210,7 +226,7 @@ function App({ user }: ProductInsertFormProps) {
                     </Form.Label>
                     <Col sm={10}>
                         <Form.Control
-                            type="text"
+                            type="number"
                             placeholder="가격을(를) 입력해 주세요."
                             name="price"
                             value={product.price}
@@ -255,7 +271,7 @@ function App({ user }: ProductInsertFormProps) {
                     </Form.Label>
                     <Col sm={10}>
                         <Form.Control
-                            type="text"
+                            type="number"
                             placeholder="재고 수량은 10개 이상 입력해 주셔야 합니다."
                             name="stock"
                             value={product.stock}
@@ -309,6 +325,7 @@ function App({ user }: ProductInsertFormProps) {
                 <Button variant="primary" type="submit" size="lg">
                     {comment}
                 </Button>
+                <Button variant="danger" type='submit' size='lg' href="/product/list">이전 목록</Button>
             </Form>
         </Container >
     );
