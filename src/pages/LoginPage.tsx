@@ -48,11 +48,9 @@ function Login({ onLogin }: Props) {
     };
 
     const autoLoginHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value, type, checked } = e.target;
-        console.log(value);
-        console.log(type === "checkbox" ? checked : value);
-        setAutoLogin(type === "checkbox" ? checked : false);
-        console.log(autoLogin);
+        setEmail("supyoungsun@gmail.com");
+        setPassword("Songhwasung!1");
+        setAutoLogin(!!e.target.checked);
     };
 
     // const setLoginInfo = (e: React.MouseEvent<HTMLInputElement>) => {
