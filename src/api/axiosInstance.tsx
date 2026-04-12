@@ -1,6 +1,5 @@
 import axios from "axios";
 import { API_BASE_URL } from "../config/config";
-import { alertEx } from '../alert/Sweetalert2Confirm';
 
 
 const axiosInstance = axios.create({
