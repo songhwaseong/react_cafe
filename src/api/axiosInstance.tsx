@@ -29,9 +29,11 @@ axiosInstance.interceptors.response.use(
         if (error.response?.status === 401 && !isLoginRequest) {
             localStorage.removeItem("accessToken");
             localStorage.removeItem("user");
-            alertEx('인증 실패: 토큰이 유효하지 않거나 만료되었습니다. \n로그인 페이지로 이동합니다.', function () {
-                window.location.replace("/member/login");
-            });
+            // alertEx('인증 실패: 토큰이 유효하지 않거나 만료되었습니다. \n로그인 페이지로 이동합니다.', function () {
+            //     window.location.replace("/member/login");
+            // });
+
+            window.location.replace("/member/login");
 
         }
         return Promise.reject(error);

@@ -59,12 +59,11 @@ interface AppProps {
 
 function App({ user }: AppProps) {
     const { id } = useParams();
-    console.log(`수정할 상품 번호 : ${id}`);
 
     const comment = '상품 수정';
 
     const initial_value = {
-        name: '', price: '', category: '-', stock: '', image: '', description: ''
+        name: '', price: '', category: '', stock: '', image: '', description: ''
     }; // 상품 객체 정보
 
     // product는 백엔드에게 넘겨줄 상품 등록 정보를 담고 있는 객체
@@ -155,13 +154,13 @@ function App({ user }: AppProps) {
     const SubmitAction = async (event: React.SyntheticEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        if (product.category === "-") {
-            alert('카테고리를 반드시 선택해 주셔야 합니다.');
-            return; // 수정 중단
-        } else if (product.image.indexOf('data:image') === -1) {
-            alertEx('이미지 파일을 업로드 해 주셔야 합니다.', function () { });
-            return;
-        }
+        // if (product.category === "") {
+        //     alert('카테고리를 반드시 선택해 주셔야 합니다.');
+        //     return; // 수정 중단
+        // } else if (!product.image.includes('data:image')) {
+        //     alertEx('이미지 파일을 업로드 해 주셔야 합니다.', function () { });
+        //     return;
+        // }
 
         // 주의) 라우팅 규칙 때문에 ${id}를 제거하면 안됩니다.
         const url = `${API_PRODUCT_URL}/update/${id}`;
@@ -187,12 +186,14 @@ function App({ user }: AppProps) {
 
         }).catch((error) => {
             if (error && error.response) {
+                setErrors(initialErrors);
                 // 백엔드에서 전달받은 오류 메시지를 저장
                 setErrors((prev) => ({
                     ...prev,
                     ...error.response?.data?.errors,
                     general: error.response?.data?.message || '상품 수정 중 오류가 발생했습니다.'
                 }));
+                alertEx(errors?.general || '상품 수정 중 오류가 발생했습니다.', function () { });
             } else {
                 setErrors((prev) => ({
                     ...prev,
@@ -210,7 +211,7 @@ function App({ user }: AppProps) {
 
             {/* 일반 오류 메시지 */}
             {/* {errors.general && <Alert variant="danger" > {errors.general} </Alert>} */}
-            <>{errors.general && alertEx(errors.general, function () { })}</>
+            {/* <>{errors.general && alertEx(errors.general, function () { })}</>ㅋ */}
             <Form onSubmit={SubmitAction}>
 
                 {/* 이름 */}
@@ -255,7 +256,7 @@ function App({ user }: AppProps) {
                             onChange={ControlChange}
                             isInvalid={!!errors.category}
                         >
-                            <option value="-" > --카테고리를 선택해 주세요.</option>
+                            <option value="" > --카테고리를 선택해 주세요.</option>
                             < option value="BREAD" > 빵 </option>
                             < option value="BEVERAGE" > 음료수 </option>
                             < option value="CAKE" > 케이크 </option>

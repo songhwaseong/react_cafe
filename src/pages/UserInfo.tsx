@@ -16,7 +16,7 @@ function App() {
             try {
                 const config = { withCredentials: true };
                 await axios.get<User>(url, config).then((response) => {
-                    setUser(response.data)
+                    setUser(response.data);
                 });
             } catch (error) {
                 console.error(error);
@@ -44,6 +44,12 @@ function App() {
                         <td>주소</td>
                         <td>{User?.address}</td>
                     </tr>
+                    {User?.addressDetail &&
+                        <tr>
+                            <td>상세 주소</td>
+                            <td>{User?.addressDetail}</td>
+                        </tr>
+                    }
                     <tr>
                         <td>가입일</td>
                         <td>{User?.regdate}</td>

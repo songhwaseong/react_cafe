@@ -6,6 +6,8 @@ import AppRoutes from './routes/AppRoutes';
 import { useEffect, useState } from 'react';
 import type { User } from './types/User';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { API_MEMBER_URL } from './config/config';
 
 function App() {
   const appName = 'IT Academy Coffee Shop';
@@ -14,15 +16,28 @@ function App() {
 
   useEffect(() => {
     const loginUser = localStorage.getItem("user");
+    const token = localStorage.getItem("accessToken");
     if (typeof loginUser === "string") {
       const parsed = JSON.parse(loginUser);   //json 문자열을 객체로 변환하여 상태에 저장
       setUser(parsed);
     }
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const tokenChk = async () => {
+      await axios.post(`${API_MEMBER_URL}/tokenChk`, {}, config).then((response) => {
+        console.log(response.data)
+      }).catch((error) => {
+        console.log(error);
+        setUser(null);
+        localStorage.removeItem("user");
+        localStorage.removeItem("accessToken");
+      })
+    }
+    token && tokenChk();
   }, []);
 
   const handleLoginSuccess = (userData: User) => {
     setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData)); //json 객체를 문자열로 변환하여 저장
+    //localStorage.setItem("user", JSON.stringify(userData)); //json 객체를 문자열로 변환하여 저장
     console.log("로그인 성공:", userData);
   }
 

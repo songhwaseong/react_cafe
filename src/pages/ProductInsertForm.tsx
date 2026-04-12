@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Col, Container, Form, Row } from 'react-bootstrap';
+import { Alert, Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { API_PRODUCT_URL } from "../config/config";
 import type { User } from '../types/User';
@@ -45,7 +45,6 @@ function App({ user }: ProductInsertFormProps) {
 
     const comment = '상품 등록';
 
-    console.log(user)
     useEffect(() => {
         if (user && user.role !== 'ADMIN') {
             alertEx(`${comment} 기능은(는) 관리자만 접근이 가능합니다.`, function () { });
@@ -78,19 +77,10 @@ function App({ user }: ProductInsertFormProps) {
     const ControlChange = (
         event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     ) => {
-        console.log(event);
         // event 객체는 change 이벤트를 발생시킨 폼 컨트롤입니다.
         const { name, value } = event.target;
         //console.log(`값이 바뀐 컨트롤 : ${name}, 값 : ${value}`);
 
-        // console.log(typeof name); // string
-        // console.log(typeof [name]); // string
-        // console.log(name); // string
-        // console.log([name]); // string
-        console.log(typeof product.name);
-        console.log(typeof product.price);
-        console.log(typeof product.category);
-        console.log(typeof product.image);
         // 전개 연산자를 사용하여 이전 컨트롤의 값들도 보존하도록 합니다.
         setProduct({ ...product, [name]: value });
     }
@@ -131,13 +121,13 @@ function App({ user }: ProductInsertFormProps) {
     const SubmitAction = async (event: React.SyntheticEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        if (product.category === "" || product.category === "-") {
-            alertEx('카테고리를 반드시 선택해 주셔야 합니다.', function () { });
-            return; // 등록 중단
-        } else if (product.image.indexOf('data:image') === -1) {
-            alertEx('이미지 파일을 업로드 해 주셔야 합니다.', function () { });
-            return;
-        }
+        // if (product.category === "") {
+        //     alertEx('카테고리를 반드시 선택해 주셔야 합니다.', function () { });
+        //     return; // 등록 중단
+        // } else if (!product.image.includes('data:image')) {
+        //     alertEx('이미지 파일을 업로드 해 주셔야 합니다.', function () { });
+        //     return;
+        // }
 
         const url = `${API_PRODUCT_URL}/insert`;
         // 참조 공유 : 2변수가 동일한 곳을 참조합니다.
@@ -171,14 +161,15 @@ function App({ user }: ProductInsertFormProps) {
 
 
             }).catch((error) => {
-                console.log(error);
                 if (error && error.response) {
+                    setErrors(initialErrors);
                     // 백엔드에서 전달받은 오류 메시지를 저장
                     setErrors((prev) => ({
                         ...prev,
                         ...error.response?.data?.errors,
                         general: error.response?.data?.message || '상품 등록 중 오류가 발생했습니다.'
                     }));
+                    alertEx(errors?.general || '상품 등록 중 오류가 발생했습니다.', function () { });
                 } else {
                     setErrors((prev) => ({
                         ...prev,
@@ -196,7 +187,8 @@ function App({ user }: ProductInsertFormProps) {
             {/* 일반 오류 메시지 */}
             {/* {errors.general && <Alert variant="danger">{errors.general}</Alert>} */}
 
-            <>{errors.general && alertEx(errors.general, function () { })}</>
+            {/* <>{errors.general && alertEx(errors.general, function () { })}</> */}
+            {/* 재 유효성검사시  */}
 
             <Form onSubmit={SubmitAction}>
                 {/* 이름 */}
@@ -251,7 +243,7 @@ function App({ user }: ProductInsertFormProps) {
                             onChange={ControlChange}
                             isInvalid={!!errors.category}
                         >
-                            <option value="-">-- 카테고리를 선택해 주세요.</option>
+                            <option value="">-- 카테고리를 선택해 주세요.</option>
                             <option value="BREAD">빵</option>
                             <option value="BEVERAGE">음료수</option>
                             <option value="CAKE">케이크</option>

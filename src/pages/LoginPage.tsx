@@ -104,7 +104,7 @@ function Login({ onLogin }: Props) {
                                             type="checkbox"
                                             id="autoLogin"
                                             label="자동로그인"
-                                            onClick={autoLoginHandler}
+                                            onChange={autoLoginHandler}
                                         />
                                     </Col>
                                 </Form.Group>
