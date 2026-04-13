@@ -13,6 +13,7 @@ import ProductUpdateForm from '../pages/ProductUpdateForm.tsx';
 import ProductList from '../pages/ProductList';
 import ProductDetail from '../pages/ProductDetail';
 import type { User } from "../types/User";
+import CartList from './../pages/CartList';
 
 
 interface AppProps {
@@ -35,6 +36,7 @@ function AppRoutes({ user, handleLoginSuccess }: AppProps) {
             <Route path='/product/insert' element={<ProductInsertForm user={user} />} />
             <Route path='/product/update/:id' element={<ProductUpdateForm user={user} />} />
             <Route path='/product/detail/:id' element={<ProductDetail user={user} />} />
+            <Route path='/cart/list' element={<CartList user={user} />} />
         </Routes>
     );
 }

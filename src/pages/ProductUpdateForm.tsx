@@ -87,7 +87,7 @@ function App({ user }: AppProps) {
 
     // id를 이용하여 기존에 입력한 상품 정보 가져오기
     useEffect(() => {
-        if (user && user.role !== 'ADMIN') {
+        if (!user) {
             alertEx(`${comment} 기능은(는) 관리자만 접근이 가능합니다.`, function () { });
             navigate('/');
         }
@@ -100,8 +100,18 @@ function App({ user }: AppProps) {
                 setProduct(response.data);
             })
             .catch((error) => {
-                console.log(`상품 ${id}번 오류 발생 : ${error}`);
-                alertEx(`해당 상품 정보를 읽어 오지 못했습니다.`, function () { });
+
+                if (error.response && error.response.status === 401) { // 401(UnAuthrized)
+                    alertEx('로그인이 필요한 서비스입니다.', function () { });
+                    navigate('/member/login'); // 로그인 페이지로 리다이렉트 
+
+                } else if (error.response.status === 404 && error.response.data.item === 'no') {
+                    alertEx('해당 상품 정보를 읽어 오지 못했습니다.', function () { });
+                    navigate(-1); // 이전 페이지로 이동하기
+                } else {
+                    alertEx('상품 정보를 불러 오는 중에 오류가 발생하였습니다.', function () { });
+                    navigate(-1); // 이전 페이지로 이동하기
+                }
             });
 
     }, [id, user, navigate]); // id 값이 변경될 때 마다 화면을 re-rendering 시켜야 합니다.

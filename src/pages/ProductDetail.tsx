@@ -4,13 +4,16 @@
 왼쪽은 상품의 이미지 정보, 오른쪽은 상품의 정보 및 `장바구니`와 `주문하기` 버튼을 만듭니다.
 */
 
+import customAxios from "./../api/axiosInstance";
 import axios from "axios";
+
 import { useEffect, useState } from "react";
 import { Button, Card, Col, Container, Form, Row, Table } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { API_IMAGE_URL, API_PRODUCT_URL } from "../config/config";
 import type { Product } from "../types/Product";
 import type { User } from "../types/User";
+import { alertEx } from "../alert/Sweetalert2Confirm";
 
 interface AppProps {
     user: User | null
@@ -25,18 +28,37 @@ function App({ user }: AppProps) {
 
     const navigate = useNavigate();
 
+    const [quantity, setQuantity] = useState(1);
+
+    const QuantityChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    ) => {
+        e.preventDefault();
+        // parseInt() 메소드는 정수형으로 생긴 문자열을 정수 값으로 변환해 줍니다.
+        if (e.target.value === '') {
+            alertEx('숫자로 적어주세요.', function () { })
+            setQuantity(1);
+        } else {
+            const newValue = parseInt(e.target.value);
+            setQuantity(newValue);
+        }
+    };
+
     // 파라미터 id가 갱신이 되면 화면을 다시 rendering 시킵니다.
     useEffect(() => {
-        if (!id) {
-            alert('로그인이 필요한 서비스입니다.');
-            navigate('/member/login');
+        // if (user && user.role !== 'ADMIN' && user.role !== 'USER') {
+        //     alertEx('로그인이 필요한 서비스입니다.', function () { navigate('/member/login'); })
+        //     return;
+        // }
+        if (!user) {
+            alertEx('로그인이 필요한 서비스입니다.', function () { navigate('/member/login'); })
             return;
         }
 
         const url = `${API_PRODUCT_URL}/detail/${id}`;
 
-        axios
-            .get(url, { withCredentials: true }) // 쿠키, 세션 포함 옵션
+        customAxios
+            .get(url)
             .then((response) => {
                 setProduct(response.data);
                 setLoading(false); // 상품 정보를 읽어 왔습니다.
@@ -45,11 +67,14 @@ function App({ user }: AppProps) {
                 console.log(error);
 
                 if (error.response && error.response.status === 401) { // 401(UnAuthrized)
-                    alert('로그인이 필요한 서비스입니다.');
+                    alertEx('로그인이 필요한 서비스입니다.', function () { });
                     navigate('/member/login'); // 로그인 페이지로 리다이렉트 
 
+                } else if (error.response.status === 404 && error.response.data.item === 'no') {
+                    alertEx('해당 상품이 DB 데이터에 없습니다.', function () { });
+                    navigate(-1); // 이전 페이지로 이동하기
                 } else {
-                    alert('상품 정보를 불러 오는 중에 오류가 발생하였습니다.');
+                    alertEx('상품 정보를 불러 오는 중에 오류가 발생하였습니다.', function () { });
                     navigate(-1); // 이전 페이지로 이동하기
                 }
             });
@@ -75,6 +100,49 @@ function App({ user }: AppProps) {
                 </h3>
             </Container>
         );
+    }
+
+
+
+    const addToCart = async () => {
+        if (!user) {
+            alertEx('로그인이 필요합니다.', function () { navigate('/member/login'); });
+            return;
+        }
+
+        if (!product) return;
+
+        if (quantity < 1) {
+            alertEx('구매 수량은 1개 이상이어야 합니다.', function () { });
+            return;
+        }
+        //alert(`${product.name} ${quantity} 개를 장바구니에 담기`);
+
+        // memberId: user.id,
+        try {
+            const parameters = {
+                productId: product.id,
+                quantity: quantity
+            };
+
+            const url = `/cart/insert`;
+            const response = await customAxios.post(url, parameters);
+
+
+            alertEx(response.data, function () { });
+            // alert(response.data);
+            // navigate('/product/list'); // 상품 목록 페이지로 이동
+
+        } catch (error) {
+            console.log('오류 발생 : ' + error);
+
+            if (axios.isAxiosError(error)) {
+                console.log(error.response?.data);
+                alertEx('장바구니 추가 실패', function () { });
+            } else {
+                console.log('예상치 못한 오류', error);
+            }
+        }
     }
 
     return (
@@ -133,6 +201,8 @@ function App({ user }: AppProps) {
                                         type="number"
                                         min="1"
                                         disabled={!user}
+                                        value={quantity}
+                                        onChange={QuantityChange}
                                     />
                                 </Col>
                             </Form.Group>
@@ -143,7 +213,14 @@ function App({ user }: AppProps) {
                                     이전 목록
                                 </Button>
                                 <Button variant="success" className="me-3 px-4"
-                                    onClick={() => { }}
+                                    onClick={() => {
+                                        if (!user) {
+                                            alertEx('로그인이 필요한 서비스입니다.', function () { navigate('/member/login'); });
+                                            return;
+                                        } else {
+                                            addToCart();
+                                        }
+                                    }}
                                 >
                                     장바구니
                                 </Button>

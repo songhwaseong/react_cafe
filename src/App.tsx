@@ -19,12 +19,12 @@ function App() {
     const token = localStorage.getItem("accessToken");
     if (typeof loginUser === "string") {
       const parsed = JSON.parse(loginUser);   //json 문자열을 객체로 변환하여 상태에 저장
+      console.log(parsed);
       setUser(parsed);
     }
     const config = { headers: { Authorization: `Bearer ${token}` } };
     const tokenChk = async () => {
       await axios.post(`${API_MEMBER_URL}/tokenChk`, {}, config).then((response) => {
-        console.log(response.data)
       }).catch((error) => {
         console.log(error);
         setUser(null);
