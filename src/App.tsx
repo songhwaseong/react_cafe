@@ -19,7 +19,6 @@ function App() {
     const token = localStorage.getItem("accessToken");
     if (typeof loginUser === "string") {
       const parsed = JSON.parse(loginUser);   //json 문자열을 객체로 변환하여 상태에 저장
-      console.log(parsed);
       setUser(parsed);
     }
     const config = { headers: { Authorization: `Bearer ${token}` } };

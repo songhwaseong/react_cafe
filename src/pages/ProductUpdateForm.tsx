@@ -87,7 +87,7 @@ function App({ user }: AppProps) {
 
     // id를 이용하여 기존에 입력한 상품 정보 가져오기
     useEffect(() => {
-        if (!user) {
+        if (user && user.role !== 'ADMIN') {
             alertEx(`${comment} 기능은(는) 관리자만 접근이 가능합니다.`, function () { });
             navigate('/');
         }

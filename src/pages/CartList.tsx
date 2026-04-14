@@ -2,12 +2,12 @@ import customAxios from "../api/axiosInstance";
 
 import { useEffect, useState } from "react";
 import { Button, Col, Container, Form, Image, Nav, Row, Table } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-import { API_BASE_URL, API_IMAGE_URL } from "../config/config";
+import { API_CART_URL, API_IMAGE_URL } from "../config/config";
 import type { CartProduct } from "../types/CartProduct";
 import type { User } from "../types/User";
-import { alertEx } from "../alert/Sweetalert2Confirm";
+import { alertEx, confirmEx } from "../alert/Sweetalert2Confirm";
 /*
 다음 오류 일단 무시 바람
 CartList.tsx:90 You provided a `checked` prop to a form field without an `onChange` handler. 
@@ -32,7 +32,11 @@ type AppProps = {
 }
 
 function App({ user }: AppProps) {
-    const thStyle = { fontSize: '1.2rem', textAlign: 'center' }; // 테이블 헤더 스타일
+    /* TypeScript가 CSS 속성(특히 textAlign)을 구체적인 리터럴 타입(예: 'center')이 아닌 
+        일반 'string' 타입으로 인식하여 React.CSSProperties 타입과 호환되지 않을 때 발생합니다. */
+    //const thStyle: React.CSSProperties = { fontSize: '1.2em', textAlign: 'center' }; // 테이블 헤더 스타일 center 는 
+    const thStyle = { fontSize: '1.2em', textAlign: 'center' } as const; // 테이블 헤더 스타일 center 는 
+
 
     // 보여 주고자하는 `카트 상품` 배열 정보
     const [cartProducts, setCartProducts] = useState<CartProduct[]>([]);
@@ -41,33 +45,39 @@ function App({ user }: AppProps) {
     // user?.id : Optional Chaining(물음표를 적어 주면 오류가 발생하지 않고 undefined를 반환해 줍니다.)
     // 즉, 오류 화면을 보여 주지 않고 아무런 일이 없었다는 듯이 동작함
     useEffect(() => {
-        if (user && user?.id) {
-            fetchCartProducts();
-        }
+        // if (user && user?.id) {
+        //     fetchCartProducts();
+        // }
+        user && user?.id && fetchCartProducts();
     }, [user]);
 
     const navigate = useNavigate();
 
     // 특정 고객이 장바구니에 담은 `카트 상품` 목록을 조회합니다.
     const fetchCartProducts = async () => {
-        try {
-            const url = `${API_BASE_URL}/cart/list`;
-            const response = await customAxios.get(url);
-            console.log('카트 상품 조회 결과');
-            console.log(response.data);
+        const url = `${API_CART_URL}/list`;
 
-            setCartProducts(response.data || []);
+        await customAxios
+            .get(url, {})
+            .then((response) => {
+                console.log('카트 상품 조회 결과');
+                console.log(response.data);
+                setCartProducts(response.data || []);
+            })
+            .catch((error: any) => {
+                console.log('오류 정보');
+                console.log(error);
+                alertEx(error.response.data, function () { navigate('/product/list'); });
+            });
 
-        } catch (error) {
-            console.log('오류 정보');
-            console.log(error);
-            alertEx('카트 상품 정보가 존재하지 않아서 상품 목록 페이지로 이동합니다.', function () { navigate('/product/list'); });
-
-        }
     };
+
 
     // 화면에 보여 주는 주문 총 금액을 위한 스테이트
     const [orderTotalPrice, setOrderTotalPrice] = useState(0);
+
+    // 전체 체크 스테이트 
+    const [isAllCheck, setIsAllCheck] = useState(false);
 
     // 체크 박스의 상태가 Toggle될 때 마다, 전체 요금을 다시 재계산하는 함수입니다.
     const refreshOrderTotalPrice = (products: CartProduct[]) => {
@@ -84,6 +94,7 @@ function App({ user }: AppProps) {
 
     // `전체 선택` 체크 박스를 Toggle 했습니다.
     const toggleAllCheckBox = (isAllCheck: boolean) => {
+        setIsAllCheck(!!isAllCheck);
         // isAllCheck : `전체 선택` 체크 박스의 boolean 값
         setCartProducts((previous) => {
             // 모든 객체(카트 상품)들의 나머지 속성은 보존하고, 체크 상태(checked)를 
@@ -113,7 +124,7 @@ function App({ user }: AppProps) {
                     ? { ...product, checked: !product.checked }
                     : product
             );
-
+            setIsAllCheck(updatedProducts.filter(p => p.checked).length === updatedProducts.length);
             refreshOrderTotalPrice(updatedProducts);
             return updatedProducts;
         });
@@ -138,7 +149,7 @@ function App({ user }: AppProps) {
         try {
             // 사용 예시 : 100번 항목을 10개로 수정해주세요.
             // http://localhost:9000/cart/edit/100?quantity=10
-            const url = `${API_BASE_URL}/cart/edit/${cartProductId}?quantity=${quantity}`;
+            const url = `${API_CART_URL}/edit/${cartProductId}?quantity=${quantity}`;
 
             // patch 동작은 전체가 아닌 일부 데이터를 변경하고자 할때 사용됩니다.
             // 스프링의 WebConfig 클래스안의 addCorsMappings() 메소드를 참조하시길 바랍니다.            
@@ -168,13 +179,13 @@ function App({ user }: AppProps) {
 
     // 선택된 항목의 `카트 상품` 아이디를 이용하여 해당 품목을 목록에서 배제합니다.
     const deleteCartProduct = async (cartProductId: number) => {
-        const isConfirmed = window.confirm('해당 카트 상품을 정말로 삭제하시겠습니까?');
 
-        if (isConfirmed) {
+        confirmEx('해당 카트 상품을 정말로 삭제하시겠습니까?', async function () {
+
             console.log('삭제할 카트 상품 아이디 : ' + cartProductId);
 
             try {
-                const url = `${API_BASE_URL}/cart/delete/${cartProductId}`;
+                const url = `${API_CART_URL}/delete/${cartProductId}`;
                 const response = await customAxios.delete(url, { withCredentials: true });
 
                 // 카트 상품 목록을 갱신하고, 요금을 다시 계산합니다.
@@ -191,9 +202,9 @@ function App({ user }: AppProps) {
                 console.log('카트 상품 삭제 동작 오류');
                 console.log(error);
             }
-        } else {
+        }, function () {
             alertEx('`카트 상품` 삭제를 취소하셨습니다.', function () { });
-        }
+        });
     };
 
     return (
@@ -209,11 +220,13 @@ function App({ user }: AppProps) {
                         <th style={thStyle}>
                             <Form.Check
                                 type="checkbox"
+                                checked={isAllCheck}
                                 label="전체"
                                 onChange={(event) => toggleAllCheckBox(event.target.checked)}
                             />
                         </th>
                         <th style={thStyle}>상품 정보</th>
+                        <th style={thStyle}>단가</th>
                         <th style={thStyle}>수량</th>
                         <th style={thStyle}>금액</th>
                         <th style={thStyle}>삭제</th>
@@ -249,6 +262,9 @@ function App({ user }: AppProps) {
                                             </Col>
                                         </Row>
                                     </Nav.Link>
+                                </td>
+                                <td className="text-center align-middle">
+                                    {product.price.toLocaleString()} 원
                                 </td>
                                 <td className="text-center align-middle">
                                     <Form.Control

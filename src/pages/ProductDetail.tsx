@@ -10,7 +10,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Button, Card, Col, Container, Form, Row, Table } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
-import { API_IMAGE_URL, API_PRODUCT_URL } from "../config/config";
+import { API_CART_URL, API_IMAGE_URL, API_PRODUCT_URL } from "../config/config";
 import type { Product } from "../types/Product";
 import type { User } from "../types/User";
 import { alertEx } from "../alert/Sweetalert2Confirm";
@@ -125,7 +125,7 @@ function App({ user }: AppProps) {
                 quantity: quantity
             };
 
-            const url = `/cart/insert`;
+            const url = `${API_CART_URL}/insert`;
             const response = await customAxios.post(url, parameters);
 
 
@@ -138,7 +138,7 @@ function App({ user }: AppProps) {
 
             if (axios.isAxiosError(error)) {
                 console.log(error.response?.data);
-                alertEx('장바구니 추가 실패', function () { });
+                alertEx('장바구니 추가 실패 : ' + error.response?.data, function () { });
             } else {
                 console.log('예상치 못한 오류', error);
             }

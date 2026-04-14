@@ -73,7 +73,7 @@ function App({ user }: ProductProps) {
                             setProducts(prev => prev.filter(p => p.id !== item.id));    //졸라 멋있는 식
                             navigate('/product/list');
                         }).catch((error) => {
-                            //alert(`상품 삭제 실패 : ${error.response?.data || error.message}`);
+                            alertEx(`상품 삭제 실패 : ${error.response?.data || error.message}`, function () { });
                             console.log(error.response?.data || error.message);
                         });
                     }, function () {

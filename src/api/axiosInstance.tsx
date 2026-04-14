@@ -1,5 +1,6 @@
 import axios from "axios";
 import { API_BASE_URL } from "../config/config";
+import { alertEx } from "../alert/Sweetalert2Confirm";
 
 
 const axiosInstance = axios.create({
@@ -12,6 +13,8 @@ axiosInstance.interceptors.request.use(
         if (token) {
             config.headers = config.headers || {};
             config.headers["Authorization"] = `Bearer ${token}`;
+        } else {
+            alertEx('토큰정보가 없습니다. \n 로그인페이지로 이동합니다. ', function () { window.location.replace("/member/login"); })
         }
         return config;
     },
