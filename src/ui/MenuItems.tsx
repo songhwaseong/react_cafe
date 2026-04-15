@@ -18,6 +18,11 @@ function MenuItems({ appName, user, handleLogout }: MenuItemsProps) {
          case 'ADMIN':
             return (
                <>
+                  {user && (
+                     <Nav.Item className="text-white fw-bold fs-5 me-3 d-flex align-items-center">
+                        {user.name}님
+                     </Nav.Item>
+                  )}
                   <Nav.Link onClick={() => navigate(`/product/list`)}>상품보기</Nav.Link>
                   <Nav.Link onClick={() => navigate(`/member/info`, { state: { email: user?.email } })}>회원 정보</Nav.Link>
                   <Nav.Link onClick={() => navigate(`/product/insert`)}>상품 등록</Nav.Link>
@@ -30,6 +35,11 @@ function MenuItems({ appName, user, handleLogout }: MenuItemsProps) {
          case 'USER':
             return (
                <>
+                  {user && (
+                     <Nav.Item className="text-white fw-bold fs-5 me-3 d-flex align-items-center">
+                        {user.name}님
+                     </Nav.Item>
+                  )}
                   <Nav.Link onClick={() => navigate(`/product/list`)}>상품보기</Nav.Link>
                   <Nav.Link onClick={() => navigate(`/member/info`, { state: { email: user?.email } })}>회원 정보</Nav.Link>
                   <Nav.Link onClick={() => navigate(`/cart/list`)}>장바구니</Nav.Link>
@@ -40,6 +50,11 @@ function MenuItems({ appName, user, handleLogout }: MenuItemsProps) {
          default:
             return (
                <>
+                  {user && (
+                     <Nav.Item className="text-white fw-bold fs-5 me-3 d-flex align-items-center">
+                        {user.name}님
+                     </Nav.Item>
+                  )}
                   <Nav.Link onClick={() => navigate(`/product/list`)}>상품보기</Nav.Link>
                   <Nav.Link onClick={() => navigate(`/member/login`)}>로그인</Nav.Link>
                   <Nav.Link onClick={() => navigate(`/member/signup`)}>회원 가입</Nav.Link>

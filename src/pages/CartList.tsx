@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Button, Col, Container, Form, Image, Nav, Row, Table } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
-import { API_CART_URL, API_IMAGE_URL } from "../config/config";
+import { API_BASE_URL, API_CART_URL, API_IMAGE_URL } from "../config/config";
 import type { CartProduct } from "../types/CartProduct";
 import type { User } from "../types/User";
 import { alertEx, confirmEx } from "../alert/Sweetalert2Confirm";
@@ -60,8 +60,6 @@ function App({ user }: AppProps) {
         await customAxios
             .get(url, {})
             .then((response) => {
-                console.log('카트 상품 조회 결과');
-                console.log(response.data);
                 setCartProducts(response.data || []);
             })
             .catch((error: any) => {
@@ -84,9 +82,11 @@ function App({ user }: AppProps) {
         let total = 0; // 총 금액 변수
 
         products.forEach((bean) => {
-            if (bean.checked) { // 선택된 체크 박스에 대하여
-                total += bean.price * bean.quantity; // 총 금액 누적
-            }
+            // if (bean.checked) { // 선택된 체크 박스에 대하여
+            //     total += bean.price * bean.quantity; // 총 금액 누적
+            // }
+
+            bean.checked && (total += bean.price * bean.quantity); // 총 금액 누적
         });
 
         setOrderTotalPrice(total); // State 업데이트
@@ -99,34 +99,31 @@ function App({ user }: AppProps) {
         setCartProducts((previous) => {
             // 모든 객체(카트 상품)들의 나머지 속성은 보존하고, 체크 상태(checked)를 
             // `전체 선택` 체크 상태와 동일하게 설정합니다.
-            const updatedProducts = previous.map((product) => ({
+            previous = previous.map((product) => ({
                 ...product,
                 checked: isAllCheck
             }));
 
-            console.log(updatedProducts);
-
             // 비동기적 렌더링 문제로 수정된 updatedProducts 항목을 매개 변수로 넘겨야 정상적으로 동작합니다.
-            refreshOrderTotalPrice(updatedProducts);
+            refreshOrderTotalPrice(previous);
 
-            return updatedProducts;
+            return previous;
         });
     };
 
     // 개별 체크 박스를 클릭하였습니다.
     const toggleCheckBox = (cartProductId: number) => {
-        console.log(`카트 상품 아이디 : ${cartProductId}`);
 
         setCartProducts((previous) => {
             // !product.checked는 체크 상태를 toggle 시키는 역할을 합니다.
-            const updatedProducts = previous.map((product) =>
+            previous = previous.map((product) =>
                 product.cartProductId === cartProductId
                     ? { ...product, checked: !product.checked }
                     : product
             );
-            setIsAllCheck(updatedProducts.filter(p => p.checked).length === updatedProducts.length);
-            refreshOrderTotalPrice(updatedProducts);
-            return updatedProducts;
+            setIsAllCheck(previous.filter(p => p.checked).length === previous.length);
+            refreshOrderTotalPrice(previous);
+            return previous;
         });
     };
 
@@ -146,19 +143,13 @@ function App({ user }: AppProps) {
             alertEx('변경 수량은 최소 1이상이어야 합니다.', function () { });
             return;
         }
-        try {
-            // 사용 예시 : 100번 항목을 10개로 수정해주세요.
-            // http://localhost:9000/cart/edit/100?quantity=10
-            const url = `${API_CART_URL}/edit/${cartProductId}?quantity=${quantity}`;
+        // 사용 예시 : 100번 항목을 10개로 수정해주세요.
+        // http://localhost:9000/cart/edit/100?quantity=10
+        const url = `${API_CART_URL}/edit/${cartProductId}?quantity=${quantity}`;
 
-            // patch 동작은 전체가 아닌 일부 데이터를 변경하고자 할때 사용됩니다.
-            // 스프링의 WebConfig 클래스안의 addCorsMappings() 메소드를 참조하시길 바랍니다.            
-            const response = await customAxios.patch(url, {}, {
-                withCredentials: true  // ✅ 인증 정보를 함께 전송
-            });
-
-            console.log(response.data || '');
-
+        // patch 동작은 전체가 아닌 일부 데이터를 변경하고자 할때 사용됩니다.
+        // 스프링의 WebConfig 클래스안의 addCorsMappings() 메소드를 참조하시길 바랍니다.            
+        await customAxios.patch(url, {}).then((res) => {
             // cartProducts의 수량 정보를 갱신합니다.
             setCartProducts((previous) => {
                 const updatedProducts = previous.map((product) =>
@@ -170,11 +161,11 @@ function App({ user }: AppProps) {
                 refreshOrderTotalPrice(updatedProducts);
                 return updatedProducts;
             });
-
-        } catch (error) {
-            console.log('카트 상품 수량 변경 실패');
+            console.log(res.data);
+        }).catch((error) => {
+            alertEx('수량을 변경하지 못했습니다. ' + error.response.data, function () { });
             console.log(error);
-        }
+        })
     };
 
     // 선택된 항목의 `카트 상품` 아이디를 이용하여 해당 품목을 목록에서 배제합니다.
@@ -182,11 +173,8 @@ function App({ user }: AppProps) {
 
         confirmEx('해당 카트 상품을 정말로 삭제하시겠습니까?', async function () {
 
-            console.log('삭제할 카트 상품 아이디 : ' + cartProductId);
-
-            try {
-                const url = `${API_CART_URL}/delete/${cartProductId}`;
-                const response = await customAxios.delete(url, { withCredentials: true });
+            const url = `${API_CART_URL}/delete/${cartProductId}`;
+            await customAxios.delete(url).then((res) => {
 
                 // 카트 상품 목록을 갱신하고, 요금을 다시 계산합니다.
                 setCartProducts((previous) => {
@@ -196,15 +184,94 @@ function App({ user }: AppProps) {
                     return updatedProducts;
                 });
 
-                alertEx(response.data, function () { });
+                alertEx(res.data, function () { });
 
-            } catch (error) {
+            }).catch((error) => {
                 console.log('카트 상품 삭제 동작 오류');
                 console.log(error);
-            }
+            })
         }, function () {
             alertEx('`카트 상품` 삭제를 취소하셨습니다.', function () { });
         });
+    };
+
+    // 사용자가 `주문하기` 버튼을 클릭하였습니다.
+    const makeOrder = async () => {
+        // 체크 박스가 on 상태인 것만 필터링합니다.
+        const selectedProducts = cartProducts.filter((bean) => bean.checked);
+        if (selectedProducts.length === 0) {
+            alertEx('주문할 상품을 선택해 주세요.', function () { });
+            return;
+        }
+
+        const url = `${API_BASE_URL}/order`;
+
+        // 스프링 부트의 OrderDto, OrderItemDto 클래스와 연관이 있습니다.
+        // 주의) parameters 작성시 key의 이름은 OrderDto의 변수 이름과 동일하게 작성해야 합니다.
+        const parameters = {
+            memberId: user?.id,
+            status: 'PENDING',
+            orderItems: selectedProducts.map((product) => ({
+                cartProductId: product.cartProductId,
+                productId: product.cartProductId,
+                quantity: product.quantity
+            }))
+        };
+
+        console.log('주문할 데이터 정보');
+        console.log(parameters);
+
+        await customAxios.post(url, parameters).then((res) => {
+
+            alertEx(res.data, function () { });
+
+            // 방금 주문한 품목은 이제 장바구니 목록에서 제거되어야 합니다.
+            setCartProducts((previous) =>
+                previous.filter((product) => !product.checked) // 주문한 상품 제거하기 (check 안한놈만 남아라)
+            );
+
+            setOrderTotalPrice(0); // 총 주문 금액 초기화
+        }).catch((error) => {
+            console.log('주문 기능 실패');
+            console.log(error);
+        })
+    };
+    const selectDel = async () => {
+        // 체크 박스가 on 상태인 것만 필터링합니다.
+        const selectedProducts = cartProducts.filter((bean) => bean.checked);
+        if (selectedProducts.length === 0) {
+            alertEx('삭제할 상품을 선택해 주세요.', function () { });
+            return;
+        }
+
+        const url = `${API_BASE_URL}/cart/deleteList`;
+
+        // 스프링 부트의 OrderDto, OrderItemDto 클래스와 연관이 있습니다.
+        // 주의) parameters 작성시 key의 이름은 OrderDto의 변수 이름과 동일하게 작성해야 합니다.
+        const parameters = [];
+
+        selectedProducts.map((product) => ({
+            parameters.push(product.cartProductId)
+            }))
+
+
+        console.log('주문할 데이터 정보');
+        console.log(parameters);
+
+        await customAxios.delete(url, { data: parameters }).then((res) => {
+
+            alertEx(res.data, function () { });
+
+            // 방금 주문한 품목은 이제 장바구니 목록에서 제거되어야 합니다.
+            setCartProducts((previous) =>
+                previous.filter((product) => !product.checked) // 주문한 상품 제거하기 (check 안한놈만 남아라)
+            );
+
+            setOrderTotalPrice(0); // 총 주문 금액 초기화
+        }).catch((error) => {
+            console.log('삭제 기능 실패');
+            console.log(error);
+        })
     };
 
     return (
@@ -226,6 +293,7 @@ function App({ user }: AppProps) {
                             />
                         </th>
                         <th style={thStyle}>상품 정보</th>
+                        <th style={thStyle}> 카테고리</th>
                         <th style={thStyle}>단가</th>
                         <th style={thStyle}>수량</th>
                         <th style={thStyle}>금액</th>
@@ -264,6 +332,9 @@ function App({ user }: AppProps) {
                                     </Nav.Link>
                                 </td>
                                 <td className="text-center align-middle">
+                                    {product.category}
+                                </td>
+                                <td className="text-center align-middle">
                                     {product.price.toLocaleString()} 원
                                 </td>
                                 <td className="text-center align-middle">
@@ -300,7 +371,10 @@ function App({ user }: AppProps) {
             {/* 좌측 정렬(text-start), 가운데 정렬(text-center), 우측 정렬(text-end) */}
             <h3 className="text-end mt-3">총 주문 금액 : {orderTotalPrice.toLocaleString()}원</h3>
             <div className="text-end">
-                <Button variant="primary" size="lg" >
+                <Button variant="primary" size="lg" onClick={selectDel}>
+                    삭제하기
+                </Button>
+                <Button variant="primary" size="lg" onClick={makeOrder}>
                     주문하기
                 </Button>
             </div>
