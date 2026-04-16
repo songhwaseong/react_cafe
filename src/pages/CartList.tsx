@@ -149,7 +149,7 @@ function App({ user }: AppProps) {
             setCartProducts((previous) => {
                 return previous.map((product) =>
                     product.cartProductId === cartProductId
-                        ? { ...product, quantity: 0 }
+                        ? { ...product, quantity: 1 }
                         : product
                 );
             });
