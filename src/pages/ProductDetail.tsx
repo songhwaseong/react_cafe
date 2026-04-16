@@ -10,7 +10,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Button, Card, Col, Container, Form, Row, Table } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
-import { API_CART_URL, API_IMAGE_URL, API_PRODUCT_URL } from "../config/config";
+import { API_BASE_URL, API_CART_URL, API_IMAGE_URL, API_PRODUCT_URL } from "../config/config";
 import type { Product } from "../types/Product";
 import type { User } from "../types/User";
 import { alertEx } from "../alert/Sweetalert2Confirm";
@@ -46,6 +46,11 @@ function App({ user }: AppProps) {
 
     // 파라미터 id가 갱신이 되면 화면을 다시 rendering 시킵니다.
     useEffect(() => {
+        const loginUser = localStorage.getItem("user");
+        if (typeof loginUser === "string") {
+            const parsed = JSON.parse(loginUser);   //json 문자열을 객체로 변환하여 상태에 저장
+            user = parsed;
+        }
         // if (user && user.role !== 'ADMIN' && user.role !== 'USER') {
         //     alertEx('로그인이 필요한 서비스입니다.', function () { navigate('/member/login'); })
         //     return;
@@ -145,6 +150,45 @@ function App({ user }: AppProps) {
         }
     }
 
+    const buyNow = async () => {
+        if (quantity < 1) {
+            alertEx('수량을 1개 이상 선택해 주셔야 합니다.', function () { });
+            return;
+        }
+
+        try {
+            const url = `${API_BASE_URL}/order`;
+            const parameters = {
+                memberId: user?.id,
+                status: 'PENDING',
+                orderItems: [{
+                    productId: product.id,
+                    quantity: quantity,
+                    price: product.price
+                }]
+            };
+            const config = {
+                headers: { 'Content-Type': 'application/json' }
+            };
+
+            console.log('주문할 데이터 정보');
+            console.log(parameters);
+
+            const response = await customAxios.post(url, parameters, config);
+
+            console.log(response.data);
+            alertEx(`${product.name} ${quantity}개를 주문하였습니다.`, function () {
+                setProduct({ ...product, stock: (product.stock - quantity) });
+            })
+
+
+
+        } catch (error) {
+            console.log('주문 기능 실패');
+            console.log(error);
+        };
+    };
+
     return (
         <Container className="my-4">
             <Card>
@@ -225,7 +269,14 @@ function App({ user }: AppProps) {
                                     장바구니
                                 </Button>
                                 <Button variant="danger" className="me-3 px-4"
-                                    onClick={() => { }}
+                                    onClick={() => {
+                                        if (!user) {
+                                            alert('로그인이 필요한 서비스입니다.');
+                                            return navigate('/member/login');
+                                        } else {
+                                            buyNow();
+                                        }
+                                    }}
                                 >
                                     주문하기
                                 </Button>

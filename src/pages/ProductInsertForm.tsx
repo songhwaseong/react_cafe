@@ -46,7 +46,12 @@ function App({ user }: ProductInsertFormProps) {
     const comment = '상품 등록';
 
     useEffect(() => {
-        if (user && user.role !== 'ADMIN') {
+        const loginUser = localStorage.getItem("user");
+        if (typeof loginUser === "string") {
+            const parsed = JSON.parse(loginUser);   //json 문자열을 객체로 변환하여 상태에 저장
+            user = parsed;
+        }
+        if (!user) {
             alertEx(`${comment} 기능은(는) 관리자만 접근이 가능합니다.`, function () { });
             navigate('/');
         }

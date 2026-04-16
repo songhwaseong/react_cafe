@@ -14,6 +14,7 @@ import ProductList from '../pages/ProductList';
 import ProductDetail from '../pages/ProductDetail';
 import type { User } from "../types/User";
 import CartList from './../pages/CartList';
+import OrderList from '../pages/OrderList';
 
 
 interface AppProps {
@@ -37,6 +38,7 @@ function AppRoutes({ user, handleLoginSuccess }: AppProps) {
             <Route path='/product/update/:id' element={<ProductUpdateForm user={user} />} />
             <Route path='/product/detail/:id' element={<ProductDetail user={user} />} />
             <Route path='/cart/list' element={<CartList user={user} />} />
+            <Route path='/order/list/' element={<OrderList user={user} />} />
         </Routes>
     );
 }

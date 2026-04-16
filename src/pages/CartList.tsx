@@ -40,6 +40,7 @@ function App({ user }: AppProps) {
 
     // 보여 주고자하는 `카트 상품` 배열 정보
     const [cartProducts, setCartProducts] = useState<CartProduct[]>([]);
+    const cartBtn = document.getElementById("cartBtn");
 
     // 사용자의 정보가 바뀔 때 화면을 렌더링해주어야 합니다.
     // user?.id : Optional Chaining(물음표를 적어 주면 오류가 발생하지 않고 undefined를 반환해 줍니다.)
@@ -125,6 +126,19 @@ function App({ user }: AppProps) {
             refreshOrderTotalPrice(previous);
             return previous;
         });
+    };
+
+    const checkedFalse = () => {
+        setCartProducts((previous) => {
+            // !product.checked는 체크 상태를 toggle 시키는 역할을 합니다.
+            previous = previous.map((product) =>
+                product.checked ?
+                    { ...product, checked: !product.checked }
+                    : product
+            );
+            return previous;
+        });
+        setIsAllCheck(isAllCheck ? !isAllCheck : isAllCheck);
     };
 
     // 카트 상품 목록에서 특정 상품의 구매 수량을 변경하였습니다.
@@ -213,8 +227,9 @@ function App({ user }: AppProps) {
             status: 'PENDING',
             orderItems: selectedProducts.map((product) => ({
                 cartProductId: product.cartProductId,
-                productId: product.cartProductId,
-                quantity: product.quantity
+                productId: product.productId,
+                quantity: product.quantity,
+                price: product.price
             }))
         };
 
@@ -223,17 +238,22 @@ function App({ user }: AppProps) {
 
         await customAxios.post(url, parameters).then((res) => {
 
-            alertEx(res.data, function () { });
+            alertEx(res.data, function () {
 
-            // 방금 주문한 품목은 이제 장바구니 목록에서 제거되어야 합니다.
-            setCartProducts((previous) =>
-                previous.filter((product) => !product.checked) // 주문한 상품 제거하기 (check 안한놈만 남아라)
-            );
+                // 방금 주문한 품목은 이제 장바구니 목록에서 제거되어야 합니다.
+                setCartProducts((previous) =>
+                    previous.filter((product) => !product.checked) // 주문한 상품 제거하기 (check 안한놈만 남아라)
+                );
 
-            setOrderTotalPrice(0); // 총 주문 금액 초기화
+                setOrderTotalPrice(0); // 총 주문 금액 초기화
+
+            });
+
+
         }).catch((error) => {
             console.log('주문 기능 실패');
             console.log(error);
+            alertEx('주문기능 실패 : ' + error.response.data, function () { checkedFalse(); });
         })
     };
     const selectDel = async () => {
@@ -248,28 +268,31 @@ function App({ user }: AppProps) {
 
         // 스프링 부트의 OrderDto, OrderItemDto 클래스와 연관이 있습니다.
         // 주의) parameters 작성시 key의 이름은 OrderDto의 변수 이름과 동일하게 작성해야 합니다.
-        const parameters = [];
+        const parameters: number[] = [];
 
-        selectedProducts.map((product) => ({
-            parameters.push(product.cartProductId)
-            }))
+        selectedProducts.forEach((product) => {
+            parameters.push(product.cartProductId);
+        })
 
 
-        console.log('주문할 데이터 정보');
+        console.log('삭제할 데이터 정보');
         console.log(parameters);
 
         await customAxios.delete(url, { data: parameters }).then((res) => {
 
-            alertEx(res.data, function () { });
+            alertEx(res.data, function () {
 
-            // 방금 주문한 품목은 이제 장바구니 목록에서 제거되어야 합니다.
-            setCartProducts((previous) =>
-                previous.filter((product) => !product.checked) // 주문한 상품 제거하기 (check 안한놈만 남아라)
-            );
+                // 방금 주문한 품목은 이제 장바구니 목록에서 제거되어야 합니다.
+                setCartProducts((previous) =>
+                    previous.filter((product) => !product.checked) // 주문한 상품 제거하기 (check 안한놈만 남아라)
+                );
 
-            setOrderTotalPrice(0); // 총 주문 금액 초기화
+                setOrderTotalPrice(0); // 총 주문 금액 초기화
+
+            });
+
         }).catch((error) => {
-            console.log('삭제 기능 실패');
+            alertEx('삭제기능 실패 : ' + error.response.data, function () { checkedFalse(); });
             console.log(error);
         })
     };
@@ -370,11 +393,11 @@ function App({ user }: AppProps) {
 
             {/* 좌측 정렬(text-start), 가운데 정렬(text-center), 우측 정렬(text-end) */}
             <h3 className="text-end mt-3">총 주문 금액 : {orderTotalPrice.toLocaleString()}원</h3>
-            <div className="text-end">
-                <Button variant="primary" size="lg" onClick={selectDel}>
+            <div className="text-end" id="cartBtn">
+                <Button variant="danger" id="selDel" size="sm" onClick={selectDel}>
                     삭제하기
                 </Button>
-                <Button variant="primary" size="lg" onClick={makeOrder}>
+                <Button variant="primary" size="sm" onClick={makeOrder}>
                     주문하기
                 </Button>
             </div>

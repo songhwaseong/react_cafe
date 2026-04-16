@@ -1,45 +1,47 @@
 import Carousel from "react-bootstrap/Carousel";
-import { API_IMAGE_URL } from "../config/config";
+import { API_IMAGE_URL, API_PRODUCT_URL } from "../config/config";
+import { useEffect, useState } from "react";
+import type { Product } from "../types/Product";
+import customAxios from "axios";
+import { Nav } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
 function HomePage() {
+
+    const [products, setProducts] = useState<Product[]>([]);
+
+    const navigate = useNavigate();
+
+    // 스프링 부트에 "상품 목록"을 요청하기
+    useEffect(() => {
+        const url = `${API_PRODUCT_URL}/list`;
+
+        customAxios
+            .get(url, {})
+            .then((response) => {
+                console.log('응답 받은 데이터');
+                setProducts(response.data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
+    }, []);
+
     console.log('자바스크립트 코딩 영역');
     return (
         <Carousel>
-            <Carousel.Item>
-                <img className="d-block w-100" src={`${API_IMAGE_URL}/고양이.png`} alt='고양이' />
-                <Carousel.Caption>
-                    <h3>아메리카노</h3>
-                    <p>졸라 쓰네 먹지마삼</p>
-                </Carousel.Caption>
-            </Carousel.Item>
-            <Carousel.Item>
-                <img className="d-block w-100" src={`${API_IMAGE_URL}/고양이2.png`} alt='고양이2' />
-                <Carousel.Caption>
-                    <h3>크로아상</h3>
-                    <p>졸라 맛없음 먹지마삼</p>
-                </Carousel.Caption>
-            </Carousel.Item>
-            <Carousel.Item>
-                <img className="d-block w-100" src={`${API_IMAGE_URL}/고양이3.png`} alt='고양이3' />
-                <Carousel.Caption>
-                    <h3>브리또</h3>
-                    <p>졸라 달음 먹미자삼</p>
-                </Carousel.Caption>
-            </Carousel.Item>
-            <Carousel.Item>
-                <img className="d-block w-100" src={`${API_IMAGE_URL}/고양이4.png`} alt='고양이4' />
-                <Carousel.Caption>
-                    <h3>화이트와인</h3>
-                    <p>달달하네 먹지마삼</p>
-                </Carousel.Caption>
-            </Carousel.Item>
-            <Carousel.Item>
-                <img className="d-block w-100" src={`${API_IMAGE_URL}/고양이5.png`} alt='고양이5' />
-                <Carousel.Caption>
-                    <h3>프렌치 바게트</h3>
-                    <p>푸석푸석 먹지마삼</p>
-                </Carousel.Caption>
-            </Carousel.Item>
+            {products.map((item) => (
+                <Carousel.Item key={item.id}>
+                    <Nav.Link onClick={() => navigate(`/product/detail/${item.id}`)}>
+                        <img className="d-block w-100" src={`${API_IMAGE_URL}/${item.image}`} alt='${item.name}' />
+                    </Nav.Link>
+                    <Carousel.Caption>
+                        <h3>{item.name}</h3>
+                        <p>{item.description}</p>
+                    </Carousel.Caption>
+                </Carousel.Item>
+            ))}
         </Carousel>
     )
 }
