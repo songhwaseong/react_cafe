@@ -93,23 +93,23 @@ function App({ user }: AppProps) {
         };
 
         // `취소` 버튼을 클릭하여 `대기 상태`인 주문 내역을 취소합니다.
-        const orderCancel = async () => {
-            try {
-                const url = `${API_BASE_URL}/order/delete/${bean.orderId}`;
-                await customAxios.delete(url);
+        // const orderCancel = async () => {
+        //     try {
+        //         const url = `${API_BASE_URL}/order/delete/${bean.orderId}`;
+        //         await customAxios.delete(url);
 
-                alertEx(`송장 번호 ${bean.orderId}의 주문이 취소 되었습니다.`, function () { });
+        //         alertEx(`송장 번호 ${bean.orderId}의 주문이 취소 되었습니다.`, function () { });
 
-                // bean.orderId와 동일하지 않은 항목들만 다시 rendering 합니다.
-                setOrders((previous) =>
-                    previous.filter((order) => order.orderId !== bean.orderId)
-                );
+        //         // bean.orderId와 동일하지 않은 항목들만 다시 rendering 합니다.
+        //         setOrders((previous) =>
+        //             previous.filter((order) => order.orderId !== bean.orderId)
+        //         );
 
-            } catch (error) {
-                console.log(error);
-                alertEx('주문 취소에 실패하였습니다.', function () { });
-            }
-        };
+        //     } catch (error) {
+        //         console.log(error);
+        //         alertEx('주문 취소에 실패하였습니다.', function () { });
+        //     }
+        // };
 
         return (
             <div className="d-flex align-items-center">
@@ -202,9 +202,11 @@ function App({ user }: AppProps) {
                                     <div className="text-start">
                                         <ul>
                                             {bean.orderItems.map((item, index) => (
-                                                <li key={index}>
-                                                    - {item.productName}  {item.quantity}개   {item.quantity * item.price}원
-                                                </li>
+                                                <Nav.Link key={index} onClick={() => navigate(`/product/detail/${item.productId}`)}>
+                                                    <li >
+                                                        - {item.productName}  {item.quantity}개   {item.quantity * item.price}원
+                                                    </li>
+                                                </Nav.Link>
                                             ))}
                                         </ul>
                                     </div>
