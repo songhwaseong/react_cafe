@@ -124,69 +124,65 @@ function App({ user }: AppProps) {
         //alert(`${product.name} ${quantity} 개를 장바구니에 담기`);
 
         // memberId: user.id,
-        try {
-            const parameters = {
-                productId: product.id,
-                quantity: quantity
-            };
+        const parameters = {
+            productId: product.id,
+            quantity: quantity
+        };
 
-            const url = `${API_CART_URL}/insert`;
-            const response = await customAxios.post(url, parameters);
+        const url = `${API_CART_URL}/insert`;
+        await customAxios.post(url, parameters).then((res) => {
+            alertEx(res.data, function () { });
+        }).catch((error) => {
+            if (error.response?.data?.errors) {
+                // 서버에서 받은 오류 정보를 객체로 저장합니다.
+                //setErrors(error.response.data);
+                console.log(error.response.data);
 
-
-            alertEx(response.data, function () { });
-            // alert(response.data);
-            // navigate('/product/list'); // 상품 목록 페이지로 이동
-
-        } catch (error) {
-            console.log('오류 발생 : ' + error);
-
-            if (axios.isAxiosError(error)) {
-                console.log(error.response?.data);
-                alertEx('장바구니 추가 실패 : ' + error.response?.data, function () { });
-            } else {
-                console.log('예상치 못한 오류', error);
+                alertEx(error.response.data, function () { });
             }
-        }
+
+        });
+
+
+
+        // alert(response.data);
+        // navigate('/product/list'); // 상품 목록 페이지로 이동
+
     }
 
     const buyNow = async () => {
-        if (quantity < 1) {
-            alertEx('수량을 1개 이상 선택해 주셔야 합니다.', function () { });
-            return;
-        }
+        // if (quantity < 1) {
+        //     alertEx('수량을 1개 이상 선택해 주셔야 합니다.', function () { });
+        //     return;
+        // }
 
-        try {
-            const url = `${API_BASE_URL}/order`;
-            const parameters = {
-                memberId: user?.id,
-                status: 'PENDING',
-                orderItems: [{
-                    productId: product.id,
-                    quantity: quantity,
-                    price: product.price
-                }]
-            };
-            const config = {
-                headers: { 'Content-Type': 'application/json' }
-            };
+        const url = `${API_BASE_URL}/order`;
+        const parameters = {
+            memberId: user?.id,
+            status: 'PENDING',
+            orderItems: [{
+                productId: product.id,
+                quantity: quantity,
+                price: product.price
+            }]
+        };
+        const config = {
+            headers: { 'Content-Type': 'application/json' }
+        };
 
-            console.log('주문할 데이터 정보');
-            console.log(parameters);
+        console.log('주문할 데이터 정보');
+        console.log(parameters);
 
-            const response = await customAxios.post(url, parameters, config);
-
-            console.log(response.data);
+        await customAxios.post(url, parameters, config).then((res) => {
+            console.log(res.data);
             alertEx(`${product.name} ${quantity}개를 주문하였습니다.`, function () {
                 setProduct({ ...product, stock: (product.stock - quantity) });
             })
-
-
-
-        } catch (error) {
+        }).catch((error) => {
             console.log('주문 기능 실패');
             console.log(error);
-        };
+            alertEx(error.response.data, function () { setQuantity(1) });
+        });
     };
 
     return (
