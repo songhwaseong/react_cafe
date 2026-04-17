@@ -1,7 +1,7 @@
 import customAxios from "../api/axiosInstance";
 
 import { useEffect, useState } from "react";
-import { Button, Col, Container, Form, Image, Nav, Row, Table } from "react-bootstrap";
+import { Alert, Button, Col, Container, Form, Image, Nav, Row, Table } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
 import { API_BASE_URL, API_CART_URL, API_IMAGE_URL } from "../config/config";
@@ -40,7 +40,6 @@ function App({ user }: AppProps) {
 
     // 보여 주고자하는 `카트 상품` 배열 정보
     const [cartProducts, setCartProducts] = useState<CartProduct[]>([]);
-    const cartBtn = document.getElementById("cartBtn");
 
     // 사용자의 정보가 바뀔 때 화면을 렌더링해주어야 합니다.
     // user?.id : Optional Chaining(물음표를 적어 주면 오류가 발생하지 않고 undefined를 반환해 줍니다.)
@@ -78,6 +77,8 @@ function App({ user }: AppProps) {
     // 전체 체크 스테이트 
     const [isAllCheck, setIsAllCheck] = useState(false);
 
+    const [errMsg, setErrMg] = useState('');
+
     // 체크 박스의 상태가 Toggle될 때 마다, 전체 요금을 다시 재계산하는 함수입니다.
     const refreshOrderTotalPrice = (products: CartProduct[]) => {
         let total = 0; // 총 금액 변수
@@ -92,6 +93,19 @@ function App({ user }: AppProps) {
 
         setOrderTotalPrice(total); // State 업데이트
     };
+
+
+
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const handleApiError = (error: any) => {
+        console.log(error);
+        if (error.response) {
+            const msg = error.response.data;
+            setErrorMessage(msg);
+        } else {
+            setErrorMessage('서버와 통신할 수 없습니다.');
+        }
+    }
 
     // `전체 선택` 체크 박스를 Toggle 했습니다.
     const toggleAllCheckBox = (isAllCheck: boolean) => {
@@ -153,10 +167,11 @@ function App({ user }: AppProps) {
                         : product
                 );
             });
-
-            alertEx('변경 수량은 최소 1이상이어야 합니다.', function () { });
+            setErrMg('변경 수량은 최소 1이상이어야 합니다.')
+            //alertEx('변경 수량은 최소 1이상이어야 합니다.', function () { });
             return;
         }
+        setErrMg('');
         // 사용 예시 : 100번 항목을 10개로 수정해주세요.
         // http://localhost:9000/cart/edit/100?quantity=10
         const url = `${API_CART_URL}/edit/${cartProductId}?quantity=${quantity}`;
@@ -215,6 +230,12 @@ function App({ user }: AppProps) {
         const selectedProducts = cartProducts.filter((bean) => bean.checked);
         if (selectedProducts.length === 0) {
             alertEx('주문할 상품을 선택해 주세요.', function () { });
+            return;
+        }
+
+        const hasInvaild = selectedProducts.some(product => product.quantity === 0);
+        if (hasInvaild) {
+            alertEx('구매수량은 1개 이상이어야 합니다.', function () { });
             return;
         }
 
@@ -299,6 +320,7 @@ function App({ user }: AppProps) {
 
     return (
         <Container className="mt-4">
+            {errMsg && <Alert variant="danger">{errMsg}</Alert>}
             <h2 className="mb-4">
                 {/* xxrem은 주위 글꼴의 xx배를 의미합니다. */}
                 <span style={{ color: 'blue', fontSize: '2rem' }}>{user?.name}</span>
@@ -317,8 +339,9 @@ function App({ user }: AppProps) {
                         </th>
                         <th style={thStyle}>상품 정보</th>
                         <th style={thStyle}> 카테고리</th>
-                        <th style={thStyle}>단가</th>
+                        <th style={thStyle}>재고</th>
                         <th style={thStyle}>수량</th>
+                        <th style={thStyle}>단가</th>
                         <th style={thStyle}>금액</th>
                         <th style={thStyle}>삭제</th>
                     </tr>
@@ -349,7 +372,7 @@ function App({ user }: AppProps) {
                                                 />
                                             </Col>
                                             <Col xs={8} className="d-flex align-items-center">
-                                                {product.name}
+                                                {product.name}({product.productId})
                                             </Col>
                                         </Row>
                                     </Nav.Link>
@@ -358,7 +381,7 @@ function App({ user }: AppProps) {
                                     {product.category}
                                 </td>
                                 <td className="text-center align-middle">
-                                    {product.price.toLocaleString()} 원
+                                    {product.stock}
                                 </td>
                                 <td className="text-center align-middle">
                                     <Form.Control
@@ -372,6 +395,9 @@ function App({ user }: AppProps) {
                                             )}
                                         style={{ width: '80px', margin: '0 auto' }}
                                     />
+                                </td>
+                                <td className="text-center align-middle">
+                                    {product.price.toLocaleString()} 원
                                 </td>
                                 <td className="text-center align-middle">
                                     {(product.price * product.quantity).toLocaleString()} 원

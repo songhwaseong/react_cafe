@@ -74,7 +74,7 @@ function App({ user }: AppProps) {
         // `완료` 버튼을 클릭하여 `PENDING` 모드를 `COMPLETED` 모드로 변경합니다.
         const changeCompleted = async (newStatus: string) => {
             try {
-                const url = `${API_BASE_URL}/order/update/status/${bean.orderId}?status=${newStatus}`;
+                const url = `${API_BASE_URL}/order/update/status/${bean.orderId}?status=${newStatus}&manageId=${user?.id}`;
                 await customAxios.put(url);
 
                 alertEx(`송장 번호 ${bean.orderId}의 주문 상태가 ${newStatus}으로 변경이 되었습니다.`, function () { });
@@ -151,6 +151,9 @@ function App({ user }: AppProps) {
                         취소
                     </Button>
                 )}
+                {bean.manageId && (
+                    <span>관리자ID : {bean.manageId}</span>
+                )}
             </div>
         );
     };
@@ -202,11 +205,11 @@ function App({ user }: AppProps) {
                                     <div className="text-start">
                                         <ul>
                                             {bean.orderItems.map((item, index) => (
-                                                <Nav.Link key={index} onClick={() => navigate(`/product/detail/${item.productId}`)}>
-                                                    <li >
-                                                        - {item.productName}  {item.quantity}개   {item.quantity * item.price}원
-                                                    </li>
-                                                </Nav.Link>
+                                                <li key={index}>
+                                                    <Nav.Link onClick={() => navigate(`/product/detail/${item.productId}`)}>
+                                                        {item.productName}  {item.quantity}개   {(item.quantity * item.price).toLocaleString()}원
+                                                    </Nav.Link>
+                                                </li>
                                             ))}
                                         </ul>
                                     </div>

@@ -5,15 +5,14 @@
 */
 
 import customAxios from "./../api/axiosInstance";
-import axios from "axios";
 
 import { useEffect, useState } from "react";
-import { Button, Card, Col, Container, Form, Row, Table } from "react-bootstrap";
+import { Alert, Button, Card, Col, Container, Form, Row, Table } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { API_BASE_URL, API_CART_URL, API_IMAGE_URL, API_PRODUCT_URL } from "../config/config";
 import type { Product } from "../types/Product";
 import type { User } from "../types/User";
-import { alertEx } from "../alert/Sweetalert2Confirm";
+import { alertEx, confirmEx } from "../alert/Sweetalert2Confirm";
 
 interface AppProps {
     user: User | null
@@ -30,17 +29,21 @@ function App({ user }: AppProps) {
 
     const [quantity, setQuantity] = useState(1);
 
+    const [errMsg, setErrMg] = useState('');
+
     const QuantityChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     ) => {
         e.preventDefault();
         // parseInt() 메소드는 정수형으로 생긴 문자열을 정수 값으로 변환해 줍니다.
         if (e.target.value === '') {
-            alertEx('숫자로 적어주세요.', function () { })
+            //alertEx('숫자로 적어주세요.', function () { })
+            setErrMg('숫자로 적어주세요');
             setQuantity(1);
         } else {
             const newValue = parseInt(e.target.value);
             setQuantity(newValue);
+            setErrMg('');
         }
     };
 
@@ -131,15 +134,14 @@ function App({ user }: AppProps) {
 
         const url = `${API_CART_URL}/insert`;
         await customAxios.post(url, parameters).then((res) => {
-            alertEx(res.data, function () { });
+            confirmEx(res.data + ' 장바구니로 이동하시겠습니까? ', function () { navigate('/cart/list'); },
+                function () { })
         }).catch((error) => {
-            if (error.response?.data?.errors) {
-                // 서버에서 받은 오류 정보를 객체로 저장합니다.
-                //setErrors(error.response.data);
-                console.log(error.response.data);
+            // 서버에서 받은 오류 정보를 객체로 저장합니다.
+            //setErrors(error.response.data);
+            console.log(error.response.data);
 
-                alertEx(error.response.data, function () { });
-            }
+            alertEx(error.response.data, function () { });
 
         });
 
@@ -177,6 +179,7 @@ function App({ user }: AppProps) {
             console.log(res.data);
             alertEx(`${product.name} ${quantity}개를 주문하였습니다.`, function () {
                 setProduct({ ...product, stock: (product.stock - quantity) });
+                navigate('/order/list');
             })
         }).catch((error) => {
             console.log('주문 기능 실패');
@@ -185,9 +188,35 @@ function App({ user }: AppProps) {
         });
     };
 
+    const ButtonRender = () => {
+        if (product.stock > 0) {
+            return <>
+                <Button variant="danger" className="me-3 px-4"
+                    onClick={() => {
+                        if (!user) {
+                            alertEx('로그인이 필요한 서비스입니다.', function () { navigate('/member/login'); });
+                            return;
+                        } else {
+                            buyNow();
+                        }
+                    }}
+                >
+                    주문하기
+                </Button>
+            </>
+        } else {
+            return <>
+                <Button variant="danger" className="me-3 px-4">
+                    품절
+                </Button>
+            </>
+        }
+    }
+
     return (
         <Container className="my-4">
             <Card>
+                {errMsg && <Alert variant="danger">{errMsg}</Alert>}
                 <Row className="g-0">
                     {/* 좌측 상품 이미지 */}
                     <Col md={4}>
@@ -264,18 +293,7 @@ function App({ user }: AppProps) {
                                 >
                                     장바구니
                                 </Button>
-                                <Button variant="danger" className="me-3 px-4"
-                                    onClick={() => {
-                                        if (!user) {
-                                            alert('로그인이 필요한 서비스입니다.');
-                                            return navigate('/member/login');
-                                        } else {
-                                            buyNow();
-                                        }
-                                    }}
-                                >
-                                    주문하기
-                                </Button>
+                                {ButtonRender()}
                             </div>
                         </Card.Body>
                     </Col>

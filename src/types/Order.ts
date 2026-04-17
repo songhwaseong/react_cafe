@@ -3,6 +3,7 @@ interface OrderItem {
     productName: string;
     quantity: number;
     price: number;
+    totalPrice: number;
 }
 
 export interface Order {
@@ -12,4 +13,5 @@ export interface Order {
     status: string;
     email: string;
     orderItems: OrderItem[];
+    manageId: number;
 }

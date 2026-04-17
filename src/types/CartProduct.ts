@@ -6,5 +6,6 @@ export interface CartProduct {
     quantity: number;
     price: number;
     category: string;
+    stock: number;
     checked: boolean;
 };
