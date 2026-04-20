@@ -421,7 +421,7 @@ function App({ user }: AppProps) {
             <h3 className="text-end mt-3">총 주문 금액 : {orderTotalPrice.toLocaleString()}원</h3>
             <div className="text-end" id="cartBtn">
                 <Button variant="danger" id="selDel" size="sm" onClick={selectDel}>
-                    삭제하기
+                    선택삭제
                 </Button>
                 <Button variant="primary" size="sm" onClick={makeOrder}>
                     주문하기
