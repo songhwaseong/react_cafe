@@ -60,6 +60,10 @@ interface AppProps {
 function App({ user }: AppProps) {
     const { id } = useParams();
 
+    console.log({ id });
+    console.log({ id });
+    console.log({ id });
+
     const comment = '상품 수정';
 
     const initial_value = {
@@ -102,15 +106,15 @@ function App({ user }: AppProps) {
             .catch((error) => {
 
                 if (error.response && error.response.status === 401) { // 401(UnAuthrized)
-                    alertEx('로그인이 필요한 서비스입니다.', function () { });
-                    navigate('/member/login'); // 로그인 페이지로 리다이렉트 
+                    alertEx('로그인이 필요한 서비스입니다.', function () { navigate('/member/login'); });
+                    // 로그인 페이지로 리다이렉트 
 
                 } else if (error.response.status === 404 && error.response.data.item === 'no') {
-                    alertEx('해당 상품 정보를 읽어 오지 못했습니다.', function () { });
-                    navigate(-1); // 이전 페이지로 이동하기
+                    alertEx('해당 상품 정보를 읽어 오지 못했습니다.', function () { navigate(-1); });
+                    // 이전 페이지로 이동하기
                 } else {
-                    alertEx('상품 정보를 불러 오는 중에 오류가 발생하였습니다.', function () { });
-                    navigate(-1); // 이전 페이지로 이동하기
+                    alertEx('상품 정보를 불러 오는 중에 오류가 발생하였습니다.', function () { navigate(-1); });
+                    // 이전 페이지로 이동하기
                 }
             });
 

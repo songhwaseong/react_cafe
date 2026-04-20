@@ -9,6 +9,10 @@ import type { User } from "../types/User";
 import customAxios from "../api/axiosInstance";
 import { alertEx, confirmEx } from "../alert/Sweetalert2Confirm";
 import { API_IMAGE_URL } from "../config/config";
+import { initialPagingInfo, type PagingInfo } from "../types/Paging";
+import Paging from "./Paging";
+import { initialSearchCondition, type SearchCondition } from '../types/SearchCondition';
+import FieldSearch from "./FieldSearch";
 
 
 /*
@@ -30,21 +34,73 @@ function App({ user }: ProductProps) {
     // 스프링에서 넘겨 받은 상품 목록 state
     const [products, setProducts] = useState<Product[]>([]);
 
+    const [paging, setPaging] = useState<PagingInfo>(initialPagingInfo);
+    const [searchCondition, setSearchCondition] = useState<SearchCondition>(initialSearchCondition);
+
     // 스프링 부트에 "상품 목록"을 요청하기
     useEffect(() => {
         const url = `/product/list`;
+        const parameters = {
+            params: {
+                pageNumber: paging.pageNumber,
+                pageSize: paging.pageSize,
+                searchDateType: searchCondition.searchDateType,
+                category: searchCondition.category,
+                searchMode: searchCondition.searchMode,
+                orderByPrice: searchCondition.orderByPrice,
+                searchKeyword: searchCondition.searchKeyword
+
+            }
+        };
 
         customAxios
-            .get(url, {})
+            .get(url, parameters)
             .then((response) => {
                 console.log('응답 받은 데이터');
-                setProducts(response.data);
+
+                // 상품 목록 세팅
+                // console.log(response.data);
+                // setProducts(response.data);
+                console.log(response.data.content);
+                setProducts(response.data.content || []);
+
+                // 여기서 paging 업데이트
+                setPaging((prev) => {
+                    const { totalElements, totalPages, pageable } = response.data;
+
+                    const pageNumber = pageable?.pageNumber ?? 0;
+                    const pageSize = pageable?.pageSize ?? prev.pageSize;
+
+                    const beginPage =
+                        Math.floor(pageNumber / prev.pageCount) * prev.pageCount;
+
+                    const endPage = Math.min(
+                        beginPage + prev.pageCount - 1,
+                        totalPages - 1
+                    );
+
+                    const pagingStatus =
+                        totalPages === 0
+                            ? "0/0 페이지"
+                            : `${pageNumber + 1}/${totalPages} 페이지`;
+
+                    return {
+                        ...prev,
+                        totalElements,
+                        totalPages,
+                        pageNumber,
+                        pageSize,
+                        beginPage,
+                        endPage,
+                        pagingStatus,
+                    };
+                });
             })
             .catch((error) => {
                 console.log(error);
             });
 
-    }, []);
+    }, [paging.pageNumber, searchCondition.searchDateType, searchCondition.category, searchCondition.searchMode, searchCondition.searchKeyword, searchCondition.orderByPrice]);
 
 
     const navigate = useNavigate();
@@ -111,6 +167,11 @@ function App({ user }: ProductProps) {
             </div>
 
             {/* 필드 검색 영역 */}
+            <FieldSearch
+                searchCondition={searchCondition}
+                setSearchCondition={setSearchCondition}
+                paging={paging}
+            />
 
             {/* 자료 보여 주는 영역 */}
             <Row>
@@ -154,6 +215,10 @@ function App({ user }: ProductProps) {
             </Row>
 
             {/* 페이징 처리 영역 */}
+            <Paging
+                paging={paging}
+                setPaging={setPaging}
+            />
 
         </Container>
     );

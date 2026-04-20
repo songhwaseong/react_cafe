@@ -124,8 +124,8 @@ function App({ user }: AppProps) {
                                 fontSize: '0.9rem',
                             }}
                         >
-                            {bean.name}
                             👤
+                            {bean.name}
                         </span>
                     </Nav.Link>
                 )}

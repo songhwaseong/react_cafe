@@ -59,7 +59,7 @@ function App({ user }: AppProps) {
         //     return;
         // }
         if (!user) {
-            alertEx('로그인이 필요한 서비스입니다.', function () { navigate('/member/login'); })
+            //alertEx('로그인이 필요한 서비스입니다.', function () { navigate('/member/login'); })
             return;
         }
 
@@ -75,7 +75,7 @@ function App({ user }: AppProps) {
                 console.log(error);
 
                 if (error.response && error.response.status === 401) { // 401(UnAuthrized)
-                    alertEx('로그인이 필요한 서비스입니다.', function () { });
+                    //alertEx('로그인이 필요한 서비스입니다.1', function () { });
                     navigate('/member/login'); // 로그인 페이지로 리다이렉트 
 
                 } else if (error.response.status === 404 && error.response.data.item === 'no') {
@@ -213,6 +213,13 @@ function App({ user }: AppProps) {
         }
     }
 
+    const modifyBtn = () => {
+        return user?.role === 'ADMIN' &&
+            <><Button variant="primary" className="me-3 px-4" onClick={(e) => { e.stopPropagation(); navigate(`/product/update/${id}`); }}>
+                수정
+            </Button></>
+    }
+
     return (
         <Container className="my-4">
             <Card>
@@ -294,12 +301,17 @@ function App({ user }: AppProps) {
                                     장바구니
                                 </Button>
                                 {ButtonRender()}
+                                {modifyBtn()}
+                                {/* {user?.role === 'ADMIN' && <><Button variant="primary" className="me-3 px-4" onClick={(e) => { e.stopPropagation(); navigate(`/product/update/{id}`) }}>
+                                    수정
+                                </Button></>
+                                } */}
                             </div>
                         </Card.Body>
                     </Col>
                 </Row>
             </Card>
-        </Container>
+        </Container >
     );
 }
 

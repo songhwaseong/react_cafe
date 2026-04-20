@@ -48,10 +48,10 @@ function Login({ onLogin }: Props) {
     };
 
     const autoLoginHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setEmail("shs_7987@hanmail.net");
-        setEmail("im_a_batman@naver.com");
-        setEmail("supyoungsun@gmail.com");
         setEmail("nanage@nanage.com");
+        setEmail("im_a_batman@naver.com");
+        setEmail("shs_7987@hanmail.net");
+        setEmail("supyoungsun@gmail.com");
         setPassword("Songhwasung!1");
         setAutoLogin(!!e.target.checked);
     };
