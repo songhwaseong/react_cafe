@@ -1,7 +1,8 @@
 //설정파일 (backEnd url , port)
 
 //const API_HOST = 'localhost';
-const API_HOST = '192.168.0.227';   //학원 와이파이
+//const API_HOST = '192.168.0.227';   //학원 와이파이
+const API_HOST = '192.168.0.36';   //집 와이파이
 
 const API_PORT = '9000';
 

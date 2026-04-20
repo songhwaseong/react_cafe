@@ -13,6 +13,7 @@ import { API_BASE_URL, API_CART_URL, API_IMAGE_URL, API_PRODUCT_URL } from "../c
 import type { Product } from "../types/Product";
 import type { User } from "../types/User";
 import { alertEx, confirmEx } from "../alert/Sweetalert2Confirm";
+import QrCode from "./QrCode";
 
 interface AppProps {
     user: User | null
@@ -239,6 +240,7 @@ function App({ user }: AppProps) {
                         <Card.Body>
                             <Card.Title className="fd-3">
                                 <h3>{product.name}</h3>
+                                <QrCode {...product} />
                             </Card.Title>
                             <Table striped>
                                 <tbody>

@@ -29,7 +29,6 @@ function MenuItems({ appName, user, handleLogout }: MenuItemsProps) {
                   {/* 관리자는 모든 사람의 주문 내역 확인 */}
                   <Nav.Link onClick={() => navigate(`/cart/list`)}>장바구니</Nav.Link>
                   <Nav.Link onClick={() => navigate(`/order/list`)}>주문 내역</Nav.Link>
-                  <Nav.Link onClick={() => navigate(`/qrCode`)}>QRCODE</Nav.Link>
                   <Nav.Link onClick={handleLogout}>로그 아웃</Nav.Link>
                </>
             );
@@ -45,7 +44,6 @@ function MenuItems({ appName, user, handleLogout }: MenuItemsProps) {
                   <Nav.Link onClick={() => navigate(`/member/info`, { state: { email: user?.email } })}>회원 정보</Nav.Link>
                   <Nav.Link onClick={() => navigate(`/cart/list`)}>장바구니</Nav.Link>
                   <Nav.Link onClick={() => navigate(`/order/list`)}>주문 내역</Nav.Link>
-                  <Nav.Link onClick={() => navigate(`/qrCode`)}>QRCODE</Nav.Link>
                   <Nav.Link onClick={handleLogout}>로그 아웃</Nav.Link>
                </>
             );
@@ -57,7 +55,6 @@ function MenuItems({ appName, user, handleLogout }: MenuItemsProps) {
                         {user.name}님
                      </Nav.Item>
                   )}
-                  <Nav.Link onClick={() => navigate(`/qrCode`)}>QRCODE</Nav.Link>
                   <Nav.Link onClick={() => navigate(`/product/list`)}>상품보기</Nav.Link>
                   <Nav.Link onClick={() => navigate(`/member/login`)}>로그인</Nav.Link>
                   <Nav.Link onClick={() => navigate(`/member/signup`)}>회원 가입</Nav.Link>
