@@ -47,7 +47,7 @@ function App({ user }: ProductProps) {
                 searchDateType: searchCondition.searchDateType,
                 category: searchCondition.category,
                 searchMode: searchCondition.searchMode,
-                orderByPrice: searchCondition.orderByPrice,
+                orderBy: searchCondition.orderBy,
                 searchKeyword: searchCondition.searchKeyword
 
             }
@@ -100,7 +100,7 @@ function App({ user }: ProductProps) {
                 console.log(error);
             });
 
-    }, [paging.pageNumber, searchCondition.searchDateType, searchCondition.category, searchCondition.searchMode, searchCondition.searchKeyword, searchCondition.orderByPrice]);
+    }, [paging.pageNumber, searchCondition.searchDateType, searchCondition.category, searchCondition.searchMode, searchCondition.searchKeyword, searchCondition.orderBy]);
 
 
     const navigate = useNavigate();

@@ -4,7 +4,7 @@ export type SearchCondition = {
     category: string;       // 카테고리
     searchMode: string;     // name | description
     searchKeyword: string;  // 키워드
-    orderByPrice: string;         // 가격정렬
+    orderBy: string;         // 가격정렬
 };
 
 
@@ -13,5 +13,5 @@ export const initialSearchCondition: SearchCondition = {
     category: '',
     searchMode: 'all',
     searchKeyword: '',
-    orderByPrice: 'all'
+    orderBy: 'all'
 };

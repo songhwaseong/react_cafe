@@ -45,7 +45,7 @@ function FieldSearch({ searchCondition, setSearchCondition, paging }: Props) {
                         value={searchCondition.category}
                         onChange={handleChange}
                     >
-                        <option value="ALL">카테고리 선택</option>
+                        <option value="ALL">카테고리</option>
                         <option value="BREAD">빵</option>
                         <option value="BEVERAGE">음료수</option>
                         <option value="CAKE">케익</option>
@@ -80,13 +80,17 @@ function FieldSearch({ searchCondition, setSearchCondition, paging }: Props) {
 
                 <Col md={2}>
                     <Form.Select
-                        name="orderByPrice"
-                        value={searchCondition.orderByPrice}
+                        name="orderBy"
+                        value={searchCondition.orderBy}
                         onChange={handleChange}
                     >
-                        <option value="ALL">가격정렬</option>
-                        <option value="DESC">낮은순으로</option>
-                        <option value="ASC">높은순으로</option>
+                        <option value="ALL">정렬(ByID)</option>
+                        <option value="DescByPrice">금액 내림차순</option>
+                        <option value="AscByPrice">금액 오름차순</option>
+                        <option value="DescByName">상품명 내림차순</option>
+                        <option value="AscByName">상품명 오름차순</option>
+                        <option value="DescByDate">등록일 내림차순</option>
+                        <option value="ASCByDate">등록일 오름차순</option>
                     </Form.Select>
                 </Col>
 
