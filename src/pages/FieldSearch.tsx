@@ -21,12 +21,44 @@ function FieldSearch({ searchCondition, setSearchCondition, paging }: Props) {
 
     return (
         <Form className="p-3">
+            <Row className="mb-3" style={{ justifyContent: 'right' }}>
+                {/* 페이지당 상품 수 */}
+                <Col md={2}>
+                    <Form.Select
+                        name="pageSize"
+                        className="text-center"
+                        value={searchCondition.pageSize}
+                        onChange={handleChange}
+                    >
+                        <option value="3">3개</option>
+                        <option value="4">4개</option>
+                        <option value="5">5개</option>
+                        <option value="6">6개</option>
+                        <option value="7">7개</option>
+                        <option value="8">8개</option>
+                        <option value="9">9개</option>
+                        <option value="10">10개</option>
+                        <option value="11">11개</option>
+                        <option value="12">12개</option>
+                    </Form.Select>
+                </Col>
+                {/* 상태 */}
+                <Col md={2}>
+                    <Form.Control
+                        type="text"
+                        className="text-center"
+                        value={paging.pagingStatus}
+                        disabled
+                    />
+                </Col>
+            </Row>
             <Row className="mb-3">
 
                 {/* 기간 */}
-                <Col md={1}>
+                <Col md={2}>
                     <Form.Select
                         name="searchDateType"
+                        className="text-center"
                         value={searchCondition.searchDateType}
                         onChange={handleChange}
                     >
@@ -42,6 +74,7 @@ function FieldSearch({ searchCondition, setSearchCondition, paging }: Props) {
                 <Col md={2}>
                     <Form.Select
                         name="category"
+                        className="text-center"
                         value={searchCondition.category}
                         onChange={handleChange}
                     >
@@ -58,49 +91,44 @@ function FieldSearch({ searchCondition, setSearchCondition, paging }: Props) {
                 <Col md={2}>
                     <Form.Select
                         name="searchMode"
+                        className="text-center"
                         value={searchCondition.searchMode}
                         onChange={handleChange}
                     >
                         <option value="ALL">전체 검색</option>
+                        <option value="id">상품 ID</option>
                         <option value="name">상품명</option>
                         <option value="description">상품 설명</option>
+                        <option value="priceMore">금액 이상</option>
+                        <option value="priceLess">금액 이하</option>
                     </Form.Select>
                 </Col>
 
                 {/* 검색어 */}
-                <Col md={3}>
+                <Col md={4}>
                     <Form.Control
                         name="searchKeyword"
                         type="text"
-                        placeholder="검색어를 입력해 주세요."
+                        placeholder="검색어를 입력해주세요"
                         value={searchCondition.searchKeyword}
                         onChange={handleChange}
                     />
                 </Col>
-
                 <Col md={2}>
                     <Form.Select
                         name="orderBy"
+                        className="text-center"
                         value={searchCondition.orderBy}
                         onChange={handleChange}
                     >
                         <option value="ALL">정렬(ByID)</option>
-                        <option value="DescByPrice">금액 내림차순</option>
-                        <option value="AscByPrice">금액 오름차순</option>
-                        <option value="DescByName">상품명 내림차순</option>
-                        <option value="AscByName">상품명 오름차순</option>
-                        <option value="DescByDate">등록일 내림차순</option>
-                        <option value="ASCByDate">등록일 오름차순</option>
+                        <option value="DescByPrice">금액 ↓</option>
+                        <option value="AscByPrice">금액 ↑</option>
+                        <option value="DescByName">상품명 ↓</option>
+                        <option value="AscByName">상품명 ↑</option>
+                        <option value="DescByDate">등록일 ↓</option>
+                        <option value="AscByDate">등록일 ↑</option>
                     </Form.Select>
-                </Col>
-
-                {/* 상태 */}
-                <Col md={2}>
-                    <Form.Control
-                        type="text"
-                        value={paging.pagingStatus}
-                        disabled
-                    />
                 </Col>
 
             </Row>

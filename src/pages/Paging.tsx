@@ -7,7 +7,6 @@ type Props = {
 };
 
 function Paging({ paging, setPaging }: Props) {
-
     return (
         <Pagination className="justify-content-center mt-4">
 
@@ -28,24 +27,25 @@ function Paging({ paging, setPaging }: Props) {
                 이전
             </Pagination.Prev>
 
-            {[...Array(paging.endPage - paging.beginPage + 1)].map((_, idx) => {
-                const pageIndex = paging.beginPage + idx + 1;
+            {
+                [...Array((paging.endPage - paging.beginPage + 1) < 0 ? 0 : (paging.endPage - paging.beginPage + 1))].map((_, idx) => {
+                    const pageIndex = paging.beginPage + idx + 1;
 
-                return (
-                    <Pagination.Item
-                        key={pageIndex}
-                        active={paging.pageNumber === (pageIndex - 1)}
-                        onClick={() =>
-                            setPaging(prev => ({
-                                ...prev,
-                                pageNumber: pageIndex - 1
-                            }))
-                        }
-                    >
-                        {pageIndex}
-                    </Pagination.Item>
-                );
-            })}
+                    return (
+                        <Pagination.Item
+                            key={pageIndex}
+                            active={paging.pageNumber === (pageIndex - 1)}
+                            onClick={() =>
+                                setPaging(prev => ({
+                                    ...prev,
+                                    pageNumber: pageIndex - 1
+                                }))
+                            }
+                        >
+                            {pageIndex}
+                        </Pagination.Item>
+                    );
+                })}
 
             <Pagination.Next
                 onClick={() => {

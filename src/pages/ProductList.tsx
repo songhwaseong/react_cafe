@@ -43,7 +43,7 @@ function App({ user }: ProductProps) {
         const parameters = {
             params: {
                 pageNumber: paging.pageNumber,
-                pageSize: paging.pageSize,
+                pageSize: searchCondition.pageSize,
                 searchDateType: searchCondition.searchDateType,
                 category: searchCondition.category,
                 searchMode: searchCondition.searchMode,
@@ -56,12 +56,12 @@ function App({ user }: ProductProps) {
         customAxios
             .get(url, parameters)
             .then((response) => {
-                console.log('응답 받은 데이터');
+                //console.log('응답 받은 데이터');
 
                 // 상품 목록 세팅
                 // console.log(response.data);
                 // setProducts(response.data);
-                console.log(response.data.content);
+                //console.log(response.data.content);
                 setProducts(response.data.content || []);
 
                 // 여기서 paging 업데이트
@@ -100,7 +100,7 @@ function App({ user }: ProductProps) {
                 console.log(error);
             });
 
-    }, [paging.pageNumber, searchCondition.searchDateType, searchCondition.category, searchCondition.searchMode, searchCondition.searchKeyword, searchCondition.orderBy]);
+    }, [paging.pageNumber, searchCondition.pageSize, searchCondition.searchDateType, searchCondition.category, searchCondition.searchMode, searchCondition.searchKeyword, searchCondition.orderBy]);
 
 
     const navigate = useNavigate();

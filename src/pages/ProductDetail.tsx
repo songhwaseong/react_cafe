@@ -223,11 +223,11 @@ function App({ user }: AppProps) {
 
     return (
         <Container className="my-4">
-            <Card>
+            <Card >
                 {errMsg && <Alert variant="danger">{errMsg}</Alert>}
-                <Row className="g-0">
+                <Row className="g-0"  >
                     {/* 좌측 상품 이미지 */}
-                    <Col md={4}>
+                    <Col md={4} >
                         <Card.Img
                             variant="top"
                             src={`${API_IMAGE_URL}/${product.image}`}
@@ -236,9 +236,9 @@ function App({ user }: AppProps) {
                         />
                     </Col>
                     {/* 우측 상품 정보 및 구매 관련 버튼 */}
-                    <Col md={8}>
+                    <Col md={8} >
                         <Card.Body>
-                            <Card.Title className="fd-3">
+                            <Card.Title className="fd-3" style={{ display: 'flex', alignItems: 'baseline' }}>
                                 <h3>{product.name}</h3>
                                 <QrCode {...product} />
                             </Card.Title>

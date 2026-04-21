@@ -5,6 +5,7 @@ export type SearchCondition = {
     searchMode: string;     // name | description
     searchKeyword: string;  // 키워드
     orderBy: string;         // 가격정렬
+    pageSize: number;       // 페이지당 상품 수 
 };
 
 
@@ -13,5 +14,6 @@ export const initialSearchCondition: SearchCondition = {
     category: '',
     searchMode: 'all',
     searchKeyword: '',
-    orderBy: 'all'
+    orderBy: 'all',
+    pageSize: 6
 };
