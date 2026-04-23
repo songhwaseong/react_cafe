@@ -95,7 +95,7 @@ function FieldSearch({ searchCondition, setSearchCondition, paging }: Props) {
                         value={searchCondition.searchMode}
                         onChange={handleChange}
                     >
-                        <option value="ALL">전체 검색</option>
+                        {/* <option value="ALL">전체 검색</option> */}
                         <option value="id">상품 ID</option>
                         <option value="name">상품명</option>
                         <option value="description">상품 설명</option>
@@ -121,7 +121,7 @@ function FieldSearch({ searchCondition, setSearchCondition, paging }: Props) {
                         value={searchCondition.orderBy}
                         onChange={handleChange}
                     >
-                        <option value="ALL">정렬(ByID)</option>
+                        <option value="Id">정렬(ByID)</option>
                         <option value="DescByPrice">금액 ↓</option>
                         <option value="AscByPrice">금액 ↑</option>
                         <option value="DescByName">상품명 ↓</option>
