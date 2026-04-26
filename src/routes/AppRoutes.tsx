@@ -15,7 +15,7 @@ import ProductDetail from '../pages/ProductDetail';
 import type { User } from "../types/User";
 import CartList from './../pages/CartList';
 import OrderList from '../pages/OrderList';
-import QrCode from '../pages/QrCode';
+import Nauth from '../pages/Nauth';
 
 
 interface AppProps {
@@ -40,7 +40,7 @@ function AppRoutes({ user, handleLoginSuccess }: AppProps) {
             <Route path='/product/detail/:id' element={<ProductDetail user={user} />} />
             <Route path='/cart/list' element={<CartList user={user} />} />
             <Route path='/order/list/' element={<OrderList user={user} />} />
-            <Route path='/qrCode' element={<QrCode />} />
+            <Route path='/member/nauth' element={<Nauth onLogin={handleLoginSuccess} />} />
         </Routes>
     );
 }
