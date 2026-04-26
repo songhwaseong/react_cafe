@@ -1,9 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { User } from "../types/User.ts";
 import axios from "axios";
 import { API_MEMBER_URL } from "../config/config.tsx";
-import { Container } from "react-bootstrap";
+import { Container, Spinner } from "react-bootstrap";
 
 interface Props {
     onLogin: (user: User) => void;
@@ -52,11 +52,11 @@ function Nauth({ onLogin }: Props) {
     }, []);
 
     return (
-        <Container className="my-4 text-center">
-            <h3>
-                로그인 중입니다.
-            </h3>
-        </Container>
+        <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+            <Spinner animation="border" role="status">
+                <span className="visually-hidden">Loading...</span>
+            </Spinner>
+        </div>
     );
 }
 
