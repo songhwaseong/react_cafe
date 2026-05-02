@@ -14,6 +14,9 @@ export const API_MEMBER_URL = `http://${API_HOST}:${API_PORT}/member`;
 export const API_PRODUCT_URL = `http://${API_HOST}:${API_PORT}/product`;
 export const API_CART_URL = `http://${API_HOST}:${API_PORT}/cart`;
 
-export const client_id = "lkqzz1uWaGCn9UC_Xrpw";
-export const redirectURI = "http://localhost:5173/member/nauth";
-export const state = "RANDOM_STATE";
+export const nav_client_id = "lkqzz1uWaGCn9UC_Xrpw";
+export const nav_redirectURI = "http://localhost:5173/member/nauth";
+export const nav_state = "RANDOM_STATE";
+
+export const kko_client_id = "3c6d9d432fdac13ca5f9565cb91764c8";
+export const kko_redirectURI = "http://localhost:5173/member/kauth";

@@ -3,7 +3,7 @@ import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import type { LoginResponse, User } from "../types/User.ts";
 import axios from "axios";
-import { API_BASE_URL, API_MEMBER_URL, client_id, redirectURI, state } from "../config/config.tsx";
+import { API_BASE_URL, API_MEMBER_URL, kko_client_id, kko_redirectURI, nav_client_id, nav_redirectURI, nav_state } from "../config/config.tsx";
 import { alertEx } from "../alert/Sweetalert2Confirm";
 
 interface Props {
@@ -91,7 +91,8 @@ function Login({ onLogin }: Props) {
         // 요청이 성공하면 navigate('/main')
     }, []);
 
-    const apiUrl = 'https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=' + `${client_id}&redirect_uri=${redirectURI}&state=${state}`;
+    const nav_apiUrl = 'https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=' + `${nav_client_id}&redirect_uri=${nav_redirectURI}&state=${nav_state}`;
+    const kko_apiUrl = 'https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=' + `${kko_client_id}&redirect_uri=${kko_redirectURI}`;
     // const naverLogin = () => {
     //     axios.get(api_url).then((res) => {
     //         console.log(res);
@@ -186,8 +187,13 @@ function Login({ onLogin }: Props) {
                         </Card>
                     </Col>
                     <Col md={4} sm={10} className="d-flex flex-column align-items-center justify-content-center"                    >
-                        <a href={apiUrl} rel="noopener noreferrer">
+                        <a href={nav_apiUrl} rel="noopener noreferrer">
                             <img src="http://localhost:9000/images/NAVER_login_Light_KR_green_narrow_H48.png" style={{ width: 180, height: 40, marginTop: 30 }} />
+                        </a>
+                    </Col>
+                    <Col md={4} sm={10} className="d-flex flex-column align-items-center justify-content-center"                    >
+                        <a href={kko_apiUrl} rel="noopener noreferrer">
+                            <img src="http://localhost:9000/images/kakao_login_large_narrow.png" style={{ width: 180, height: 40, marginTop: 30 }} />
                         </a>
                     </Col>
                 </Row>

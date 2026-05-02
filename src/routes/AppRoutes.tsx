@@ -16,6 +16,7 @@ import type { User } from "../types/User";
 import CartList from './../pages/CartList';
 import OrderList from '../pages/OrderList';
 import Nauth from '../pages/Nauth';
+import Kauth from '../pages/Kauth';
 
 
 interface AppProps {
@@ -41,6 +42,7 @@ function AppRoutes({ user, handleLoginSuccess }: AppProps) {
             <Route path='/cart/list' element={<CartList user={user} />} />
             <Route path='/order/list/' element={<OrderList user={user} />} />
             <Route path='/member/nauth' element={<Nauth onLogin={handleLoginSuccess} />} />
+            <Route path='/member/kauth' element={<Kauth onLogin={handleLoginSuccess} />} />
         </Routes>
     );
 }
