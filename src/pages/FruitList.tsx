@@ -8,6 +8,8 @@ function App() {
     const [fruitList, setFruitList] = useState<Fruit[]>([]);
     const url = `/product/fruitList`;
 
+
+
     useEffect(() => {
         const fetchData = async () => {
             try {
