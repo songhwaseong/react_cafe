@@ -3,6 +3,8 @@ import type { Fruit } from "../types/Fruit";
 import { Table } from "react-bootstrap";
 import axios from "../api/axiosInstance";
 
+
+
 function App() {
 
     const [fruitList, setFruitList] = useState<Fruit[]>([]);
